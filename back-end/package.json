@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc -p . --watch"
+    "start": "node dist/main.js",
+    "watch": "tsc -p . --watch"
   },
   "author": "“Menushka <“contact@menushka.ca”>",
   "license": "ISC",
