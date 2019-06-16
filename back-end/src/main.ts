@@ -1,18 +1,30 @@
 import express from "express";
 import http from "http";
-import socketio from "socket.io";
+import socketIO from "socket.io";
 
 import { Config } from "./config";
-import { GameModel } from "./models/gameModel";
+import { Events } from "./events";
+import { AlexaManager } from "./managers/alexaManager";
+import { GameManager } from "./managers/gameManager";
+import { PlayerManager } from "./managers/playerManager";
+
+const alexaManager = new AlexaManager();
+const gameManager = new GameManager();
+const playerManager = new PlayerManager();
 
 const expressServer = express();
 const httpServer = http.createServer(expressServer);
-const io = socketio(httpServer);
+const io = socketIO(httpServer);
 
-const gameModel = new GameModel();
-
-io.on("connection", (socket) => {
-    console.log(socket.handshake.query.client);
+io.on(Events.CONNECTION, (socket: SocketIO.Socket) => {
+    const clientType = socket.handshake.query.client;
+    if (clientType === Config.CLIENT_TYPE_ALEXA) {
+        alexaManager.setSocket(socket);
+    } else if (clientType === Config.CLIENT_TYPE_PLAYER) {
+        playerManager.addPlayer(socket);
+    } else {
+        console.log("Unrecognized client type connection");
+    }
 });
 
 httpServer.listen(Config.PORT, () => {

@@ -11,26 +11,39 @@ const LaunchRequestHandler = {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
   handle(handlerInput) {
-    const speechText = 'Wizard Chess started!';
+    const speechText = 'Welcome to Wizard Chess!';
+
+    const userId = handlerInput.requestEnvelope.session.user.userId;
+
+    socket.emit('alexaConnection', {
+      userId: userId
+    });
 
     return handlerInput.responseBuilder
       .speak(speechText)
       .reprompt(speechText)
-      .withSimpleCard('Hello World', speechText)
+      .withSimpleCard('WizardChess', speechText)
       .getResponse();
   },
 };
 
-const ConnectIntentHandler = {
+const JoinIntentHandler = {
   canHandle(handlerInput) {
     return (handlerInput.requestEnvelope.request.type === 'IntentRequest'
       || handlerInput.requestEnvelope.request.type === 'CanFulfillIntentRequest')
-      && handlerInput.requestEnvelope.request.intent.name === 'ConnectIntent';
+      && handlerInput.requestEnvelope.request.intent.name === 'JoinIntent';
   },
   handle(handlerInput) {
     const speechText = 'Connected!';
 
-    console.log(handlerInput.requestEnvelope.request.intent.slots);
+    const userId = handlerInput.requestEnvelope.session.user.userId;
+    const slots = handlerInput.requestEnvelope.request.intent.slots;
+    const gameId = slots["GAME_ID"].value;
+
+    socket.emit('joinGame', {
+      userId: userId,
+      gameId: gameId
+    });
 
     return handlerInput.responseBuilder
       .speak(speechText)
@@ -49,7 +62,16 @@ const MovePieceIntentHandler = {
   handle(handlerInput) {
     const speechText = 'Chess piece moved!';
 
-    console.log(handlerInput.requestEnvelope.request.intent.slots);
+    const userId = handlerInput.requestEnvelope.session.user.userId;
+    const slots = handlerInput.requestEnvelope.request.intent.slots;
+    const chessPiece = slots["CHESS_PIECE"].value;
+    const boardPosition = slots["BOARD_POSITION"].value;
+
+    socket.emit('chessPieceMoved', {
+      userId: userId,
+      chessPiece: chessPiece,
+      boardPosition: boardPosition
+    });
 
     return handlerInput.responseBuilder
       .speak(speechText)
@@ -85,7 +107,7 @@ const HelpIntentHandler = {
     return handlerInput.responseBuilder
       .speak(speechText)
       .reprompt(speechText)
-      .withSimpleCard('Hello World', speechText)
+      .withSimpleCard('WizardChess', speechText)
       .getResponse();
   },
 };
@@ -101,7 +123,7 @@ const CancelAndStopIntentHandler = {
 
     return handlerInput.responseBuilder
       .speak(speechText)
-      .withSimpleCard('Hello World', speechText)
+      .withSimpleCard('WizardChess', speechText)
       .getResponse();
   },
 };
@@ -136,7 +158,7 @@ const skillBuilder = Alexa.SkillBuilders.custom();
 exports.skill = skillBuilder
   .addRequestHandlers(
     LaunchRequestHandler,
-    ConnectIntentHandler,
+    JoinIntentHandler,
     MovePieceIntentHandler,
     FallbackIntentHandler,
     HelpIntentHandler,
