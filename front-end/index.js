@@ -1,8 +1,11 @@
 var Chess = require('chess.js').Chess;
 var stockfish = require('stockfish');
 
+// CPU vs CPU test cases
+
+// Parse return from Stockfish API 
 function fenAnalysis(event) {
-    var pattern = /bestmove (\w+) ponder (\w+)/
+    var pattern = /bestmove (\w+)(?: ponder (\w+))?/
     var re = new RegExp(pattern)
 
     if (re.test(event)) {
@@ -21,6 +24,7 @@ function fenAnalysis(event) {
     }
 }
 
+//Input FEN
 function postFen({
     engine,
     depth,
@@ -28,6 +32,24 @@ function postFen({
 } = {}) {
     engine.postMessage(`position fen ${fen}`)
     engine.postMessage(`go depth ${depth}`)
+}
+
+function printGameState(){
+    console.log(
+        `
+        Game Over: ${chess.game_over()}
+        Turn: ${chess.turn()}
+        Checkmate: ${chess.in_checkmate()}
+        Stalemate: ${chess.in_stalemate()}
+        Threefold Repitition: ${chess.in_threefold_repetition()}
+        fen: ${chess.fen()}
+        `
+    );
+}
+
+function randomIntFromInterval(min,max) // min and max included
+{
+    return Math.floor(Math.random()*(max-min+1)+min);
 }
 
 var fish = stockfish()
@@ -38,37 +60,32 @@ fish.onmessage = async event => {
     analysis = fenAnalysis(event)
     if (analysis) {
         // console.log(analysis.bestmove.raw)
+        console.log(analysis);
+        console.log(`next_move: ${analysis.bestmove.raw} | ${chess.turn()}`)
         chess.move(analysis.bestmove.raw, {
             sloppy: true
         })
         console.log(chess.ascii());
-        console.log(`move: ${analysis.bestmove.raw}`)
+        printGameState();
     }
-
-    // chess.move(res.bestmove.raw, {
-    //     sloppy: true
-    // })
-    // console.log(chess.ascii())
 }
+
 counter = 0 
-setInterval(() => {
-    if (chess.game_over() == false) {
+
+var gameStart = setInterval(() => {
+    if (!chess.game_over()) {
         postFen({
             engine: fish,
-            depth: 5,
+            depth: randomIntFromInterval(1,2),
             fen: chess.fen()
         })
-        console.log(chess.pgn());
-        console.log(chess.game_over());
+        counter++;
     } else {
-        console.log(
-            `
-            Game Over: ${chess.game_over()}
-            Turn: ${chess.turn()}
-            Checkmate: ${chess.in_checkmate()}
-            Stalemate: ${chess.in_stalemate()}
-            Threefold Repitition: ${chess.in_threefold_repetition()}
-            `
-        );
+        console.log(`---- End ----`);
+        chess.game_over();
+        printGameState();
+        clearInterval(gameStart);
     }
 }, 50);
+
+
