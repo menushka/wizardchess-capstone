@@ -1,4 +1,4 @@
-import { ChessLocation, ChessPiece, IChessBoard } from "./general";
+import { BoardLocation, ChessPiece, IChessBoard } from "./general";
 
 export interface IConnect {}
 
@@ -13,11 +13,16 @@ export interface IGameStarted {
     board: IChessBoard;
 }
 
-export interface IChessBoardMoved {
-    gameID: string;
-    piece: ChessPiece;
-    location: ChessLocation;
+export interface IJoinGame {
+    gameId: string;
 }
+
+export interface IChessPieceMoved {
+    piece: ChessPiece;
+    location: BoardLocation;
+}
+
+export interface ISurrenderGame {}
 
 export interface IBoardStateUpdate {
     board: IChessBoard;
