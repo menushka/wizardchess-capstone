@@ -1,12 +1,14 @@
-import { GameType, IChessBoard } from "../interfaces/general";
+import { BoardLocation, ChessPiece, GameType, IChessBoard } from "../interfaces/general";
+import { AlexaManager } from "../managers/alexaManager";
+import { PlayerManager } from "../managers/playerManager";
 
 export class ChessBoard implements IChessBoard {
 
     public id: string;
     public type: GameType;
     public state: ChessBoardState;
-    public black: string;
-    public white: string;
+    public blackUser: string;
+    public whiteUser: string;
     public boardState: string[][];
     public currentTurn: number;
 
@@ -27,7 +29,9 @@ export class ChessBoard implements IChessBoard {
         this.assignRemainder(userId);
     }
 
-    public movePiece() {
+    public movePiece(userId: string, piece: ChessPiece, location: BoardLocation) {
+        if (this.getCurrentUser() !== userId) { return; }
+
         const x = Math.floor(Math.random() * 8);
         const y = Math.floor(Math.random() * 8);
         let nx = Math.floor(Math.random() * 8);
@@ -42,26 +46,39 @@ export class ChessBoard implements IChessBoard {
         }
         this.boardState[ny][nx] = this.boardState[y][x];
         this.boardState[y][x] = "";
+        this.currentTurn += 1;
     }
 
     public surrender(userId: string) {
         this.state = ChessBoardState.Finished;
+        if (this.whiteUser) {
+            PlayerManager.instance.clearGame(this.whiteUser);
+            AlexaManager.instance.clearGame(this.whiteUser);
+        }
+        if (this.blackUser) {
+            PlayerManager.instance.clearGame(this.blackUser);
+            AlexaManager.instance.clearGame(this.blackUser);
+        }
     }
 
     private randomAssignWhiteOrBlack(userId: string) {
         if (Math.random() > 0.5) {
-            this.white = userId;
+            this.whiteUser = userId;
         } else {
-            this.black = userId;
+            this.blackUser = userId;
         }
     }
 
     private assignRemainder(userId: string) {
-        if (this.white) {
-            this.black = userId;
-        } else if (this.black) {
-            this.white = userId;
+        if (this.whiteUser) {
+            this.blackUser = userId;
+        } else if (this.blackUser) {
+            this.whiteUser = userId;
         }
+    }
+
+    private getCurrentUser() {
+        return this.currentTurn % 2 === 0 ? this.whiteUser : this.blackUser;
     }
 
     private setDefaultBoardState() {

@@ -26,8 +26,8 @@ export class GameManager {
         }
     }
 
-    public moveChessPiece(gameId: string, chessPiece: ChessPiece, boardLocation: BoardLocation) {
-        this.games[gameId].movePiece();
+    public moveChessPiece(userId: string, gameId: string, chessPiece: ChessPiece, boardLocation: BoardLocation) {
+        this.games[gameId].movePiece(userId, chessPiece, boardLocation);
     }
 
     public surrender(gameId: string, userId: string) {

@@ -27,6 +27,11 @@ export class AlexaManager {
         this.alexaPlayers[userId] = null;
     }
 
+    public clearGame(userId: string) {
+        if (!(userId in this.alexaPlayers)) { return; }
+        this.alexaPlayers[userId] = null;
+    }
+
     private setGameForPlayer(userId: string, gameId: string) {
         this.alexaPlayers[userId] = gameId;
     }
@@ -34,12 +39,13 @@ export class AlexaManager {
     private attachSocketListeners() {
         this.alexaSocket.on(Events.ALEXA_CONNECTION, (data: IAlexaConnection) => {
             this.addPlayer(data.userId);
+            this.send(data.userId, Events.ALEXA_CONNECTION_CONFIRM, {});
         });
 
         this.alexaSocket.on(Events.START_GAME, (data: IAlexaStart) => {
             const game = GameManager.instance.startGame(data.userId, data.type);
             this.setGameForPlayer(data.userId, game.id);
-            this.send(data.userId, Events.GAME_STARTED, {
+            this.send(data.userId, Events.START_GAME_CONFIRM, {
                 gameId: game.id,
                 board: game.boardState
             } as IGameStarted);
@@ -52,16 +58,22 @@ export class AlexaManager {
         });
 
         this.alexaSocket.on(Events.CHESS_PIECE_MOVED, (data: IAlexaMovePiece) => {
-            GameManager.instance.moveChessPiece(this.alexaPlayers[data.userId], data.chessPiece, data.boardPosition);
+            GameManager.instance.moveChessPiece(
+                data.userId,
+                this.alexaPlayers[data.userId],
+                data.chessPiece,
+                data.boardPosition
+            );
         });
 
         this.alexaSocket.on(Events.SURRENDER_GAME, (data: IAlexaSurrender) => {
-            GameManager.instance.surrender(data.userId, this.alexaPlayers[data.userId]);
+            GameManager.instance.surrender(this.alexaPlayers[data.userId], data.userId);
         });
     }
 
     private send(userId: string, eventName: string, data: any) {
         data.userId = userId;
+        console.log(eventName + " - " + data);
         this.alexaSocket.emit(eventName, data);
     }
 }

@@ -9,6 +9,9 @@ export class Events {
     public static SURRENDER_GAME: string = "surrenderGame";
 
     // OUTGOING EVENTS
-    public static GAME_STARTED: string = "gameStarted";
-    public static BOARD_UPDATE_STATUS: string = "boardStateUpdate";
+    public static ALEXA_CONNECTION_CONFIRM: string = "alexaConnectionConfirm";
+    public static START_GAME_CONFIRM: string = "startGameConfirm";
+    public static JOIN_GAME_CONFIRM: string = "joinGameConfirm";
+    public static CHESS_PIECE_MOVED_CONFIRM: string = "chessPieceMovedConfirm";
+    public static SURRENDER_GAME_CONFIRM: string = "surrenderGameConfirm";
 }

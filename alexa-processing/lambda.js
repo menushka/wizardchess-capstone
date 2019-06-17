@@ -4,19 +4,56 @@
 const Alexa = require('ask-sdk-core');
 const io = require('socket.io-client');
 
-const socket = io('http://localhost:8000', { query: { client:"alexa" } });
+const ALEXA_CONNECTION = "alexaConnection";
+const START_GAME = "startGame";
+const JOIN_GAME = "joinGame";
+const CHESS_PIECE_MOVED = "chessPieceMoved";
+const SURRENDER_GAME = "surrenderGame";
+
+const ALEXA_CONNECTION_CONFIRM = "alexaConnectionConfirm";
+const START_GAME_CONFIRM = "startGameConfirm";
+const JOIN_GAME_CONFIRM = "joinGameConfirm";
+const CHESS_PIECE_MOVED_CONFIRM = "chessPieceMovedConfirm";
+const SURRENDER_GAME_CONFIRM = "surrenderGameConfirm";
+
+const RESPONSE_TIMEOUT = 1000;
+
+class SocketManager {
+  constructor() {
+    this.socket = io('http://localhost:8000', { query: { client:"alexa" } });
+  }
+
+  emit(userId, eventName, data) {
+    return new Promise((resolve, reject) => {
+      data.userId = userId;
+      const onConfirm = () => {
+        this.socket.off(eventName + "Confirm", onConfirm);
+        resolve(data);
+      };
+      this.socket.on(eventName + "Confirm", onConfirm);
+
+      this.socket.emit(eventName, data);
+      setTimeout(reject, RESPONSE_TIMEOUT);
+    });
+  }
+}
+
+const socketManager = new SocketManager();
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
-  handle(handlerInput) {
-    const speechText = 'Welcome to Wizard Chess!';
-
+  async handle(handlerInput) {
     const userId = handlerInput.requestEnvelope.session.user.userId;
 
-    socket.emit('alexaConnection', {
-      userId: userId
+    let speechText = '';
+    await socketManager.emit(userId, 'alexaConnection', {})
+    .then(() => {
+      speechText = 'Welcome to Wizard Chess!';
+    })
+    .catch(() => {
+      speechText = 'Error connecting.';
     });
 
     return handlerInput.responseBuilder
@@ -27,24 +64,59 @@ const LaunchRequestHandler = {
   },
 };
 
-const JoinIntentHandler = {
+const StartGameIntentHandler = {
   canHandle(handlerInput) {
     return (handlerInput.requestEnvelope.request.type === 'IntentRequest'
       || handlerInput.requestEnvelope.request.type === 'CanFulfillIntentRequest')
-      && handlerInput.requestEnvelope.request.intent.name === 'JoinIntent';
+      && handlerInput.requestEnvelope.request.intent.name === 'StartGameIntent';
   },
-  handle(handlerInput) {
-    const speechText = 'Connected!';
+  async handle(handlerInput) {
+    const userId = handlerInput.requestEnvelope.session.user.userId;
+    const slots = handlerInput.requestEnvelope.request.intent.slots;
+    const type = slots["TYPE"].value;
 
+    let speechText = '';
+    await socketManager.emit(userId, 'startGame', {
+      type: type
+    })
+    .then(() => {
+      speechText = 'Game started!';
+    })
+    .catch(() => {
+      speechText = 'Error starting game.';
+    });
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .reprompt(speechText)
+      .withSimpleCard('Connected', speechText)
+      .getResponse();
+  },
+};
+
+const JoinGameIntentHandler = {
+  canHandle(handlerInput) {
+    return (handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      || handlerInput.requestEnvelope.request.type === 'CanFulfillIntentRequest')
+      && handlerInput.requestEnvelope.request.intent.name === 'JoinGameIntent';
+  },
+  async handle(handlerInput) {
     const userId = handlerInput.requestEnvelope.session.user.userId;
     const slots = handlerInput.requestEnvelope.request.intent.slots;
     const gameId = slots["GAME_ID"].value;
 
-    socket.emit('joinGame', {
-      userId: userId,
+    let speechText = '';
+    await socketManager.emit(userId, 'joinGame', {
       gameId: gameId
+    })
+    .then(() => {
+      speechText = 'Connected!';
+    })
+    .catch(() => {
+      speechText = 'Error joining game.';
     });
 
+    
     return handlerInput.responseBuilder
       .speak(speechText)
       .reprompt(speechText)
@@ -59,24 +131,54 @@ const MovePieceIntentHandler = {
       || handlerInput.requestEnvelope.request.type === 'CanFulfillIntentRequest')
       && handlerInput.requestEnvelope.request.intent.name === 'MovePieceIntent';
   },
-  handle(handlerInput) {
-    const speechText = 'Chess piece moved!';
-
+  async handle(handlerInput) {
     const userId = handlerInput.requestEnvelope.session.user.userId;
     const slots = handlerInput.requestEnvelope.request.intent.slots;
     const chessPiece = slots["CHESS_PIECE"].value;
     const boardPosition = slots["BOARD_POSITION"].value;
 
-    socket.emit('chessPieceMoved', {
-      userId: userId,
+    let speechText = '';
+    await socketManager.emit(userId, 'chessPieceMoved', {
       chessPiece: chessPiece,
       boardPosition: boardPosition
+    })
+    .then(() => {
+      speechText = 'Piece moved!';
+    })
+    .catch(() => {
+      speechText = 'Error moving piece.';
     });
 
     return handlerInput.responseBuilder
       .speak(speechText)
       .reprompt(speechText)
       .withSimpleCard('Piece Moved', speechText)
+      .getResponse();
+  },
+};
+
+const SurrenderIntentHandler = {
+  canHandle(handlerInput) {
+    return (handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      || handlerInput.requestEnvelope.request.type === 'CanFulfillIntentRequest')
+      && handlerInput.requestEnvelope.request.intent.name === 'SurrenderIntent';
+  },
+  async handle(handlerInput) {
+    const userId = handlerInput.requestEnvelope.session.user.userId;
+
+    let speechText = '';
+    await socketManager.emit(userId, 'surrenderGame', {})
+    .then(() => {
+      speechText = 'Game surrendered.';
+    })
+    .catch(() => {
+      speechText = 'Error surrendering.';
+    });
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .reprompt(speechText)
+      .withSimpleCard('Connected', speechText)
       .getResponse();
   },
 };
@@ -158,8 +260,10 @@ const skillBuilder = Alexa.SkillBuilders.custom();
 exports.skill = skillBuilder
   .addRequestHandlers(
     LaunchRequestHandler,
-    JoinIntentHandler,
+    StartGameIntentHandler,
+    JoinGameIntentHandler,
     MovePieceIntentHandler,
+    SurrenderIntentHandler,
     FallbackIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,

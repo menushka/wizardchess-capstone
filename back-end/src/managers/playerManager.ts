@@ -19,6 +19,11 @@ export class PlayerManager {
         this.attachSocketListeners(socket.id);
     }
 
+    public clearGame(userId: string) {
+        if (!(userId in this.playerGames)) { return; }
+        this.playerGames[userId] = null;
+    }
+
     private setGameForPlayer(socketId: string, gameId: string) {
         this.playerGames[socketId] = gameId;
     }
@@ -27,7 +32,7 @@ export class PlayerManager {
         this.playerSockets[socketId].on(Events.START_GAME, (data: IStartGame) => {
             const game = GameManager.instance.startGame(socketId, data.type);
             this.setGameForPlayer(socketId, game.id);
-            this.send(socketId, Events.GAME_STARTED, {
+            this.send(socketId, Events.START_GAME_CONFIRM, {
                 gameId: game.id,
                 board: game.boardState
             } as IGameStarted);
@@ -40,11 +45,11 @@ export class PlayerManager {
         });
 
         this.playerSockets[socketId].on(Events.CHESS_PIECE_MOVED, (data: IChessPieceMoved) => {
-            GameManager.instance.moveChessPiece(this.playerGames[socketId], data.piece, data.location);
+            GameManager.instance.moveChessPiece(socketId, this.playerGames[socketId], data.piece, data.location);
         });
 
         this.playerSockets[socketId].on(Events.SURRENDER_GAME, (data: ISurrenderGame) => {
-            GameManager.instance.surrender(socketId, this.playerGames[socketId]);
+            GameManager.instance.surrender(this.playerGames[socketId], socketId);
         });
     }
 
