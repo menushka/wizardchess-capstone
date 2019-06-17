@@ -1,44 +1,51 @@
 import { ChessBoard } from "../data/chessboard";
-import { BoardLocation, ChessPiece } from "../interfaces/general";
+import { BoardLocation, ChessPiece, GameType } from "../interfaces/general";
 
 export class GameManager {
 
     public static instance: GameManager;
 
-    private games: { [id: string]: ChessBoard };
+    private games: { [id: string]: ChessBoard } = {};
 
     constructor() {
         GameManager.instance = this;
     }
 
-    public newGame(): ChessBoard {
-        const board = new ChessBoard();
+    public getGame(gameId: string): ChessBoard {
+        return this.games[gameId];
+    }
+
+    public startGame(userId: string, type: GameType) {
+        return this.createNewGame(userId, type);
+    }
+
+    public joinGame(userId: string, gameId: string, cb: (gameId: string) => void) {
+        if (this.games[gameId]) {
+            this.games[gameId].join(userId);
+            cb(gameId);
+        }
+    }
+
+    public moveChessPiece(gameId: string, chessPiece: ChessPiece, boardLocation: BoardLocation) {
+        this.games[gameId].movePiece();
+    }
+
+    public surrender(gameId: string, userId: string) {
+        this.games[gameId].surrender(userId);
+    }
+
+    private createNewGame(userId: string, type: GameType): ChessBoard {
         const code = this.generateGameID();
+        const board = new ChessBoard(userId, type, code);
         this.games[code] = board;
         return board;
     }
 
-    public startGame(userId: string, type: number) {
-
-    }
-
-    public joinGame(userId: string, gameId: string) {
-
-    }
-
-    public moveChessPiece(userId: string, chessPiece: ChessPiece, boardLocation: BoardLocation) {
-
-    }
-
-    public surrender(userId: string) {
-
-    }
-
-    private generateGameID() {
+    private generateGameID(): string {
         let gameCode = Math.floor(1000 + Math.random() * 9000);
         while (String(gameCode) in this.games) {
             gameCode = Math.floor(1000 + Math.random() * 9000);
         }
-        return gameCode;
+        return String(gameCode);
     }
 }

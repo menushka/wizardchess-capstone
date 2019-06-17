@@ -9,8 +9,8 @@ export interface IStartGame {
 }
 
 export interface IGameStarted {
-    gameID: string;
-    board: IChessBoard;
+    gameId: string;
+    board: string[][];
 }
 
 export interface IJoinGame {

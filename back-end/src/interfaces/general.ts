@@ -1,8 +1,11 @@
 export enum GameType {
-    KeyboardVsAI = 1,
-    KeyboardVsKeyboard = 2,
-    KeyboardVsAlexa = 3,
-    AlexaVsAlexa = 4
+    AI = 1,
+    Player = 2
+}
+
+export enum ChessColor {
+    WHITE = "W",
+    BLACK = "B"
 }
 
 export enum ChessPiece {
@@ -24,6 +27,6 @@ export type BoardLocation = "A1"|"A2"|"A3"|"A4"|"A5"|"A6"|"A7"|"A8"|
                             "H1"|"H2"|"H3"|"H4"|"H5"|"H6"|"H7"|"H8";
 
 export interface IChessBoard {
-    boardState: number[][];
+    boardState: string[][];
     currentTurn: number;
 }

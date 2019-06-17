@@ -9,5 +9,6 @@ export class Events {
     public static SURRENDER_GAME: string = "surrenderGame";
 
     // OUTGOING EVENTS
+    public static GAME_STARTED: string = "gameStarted";
     public static BOARD_UPDATE_STATUS: string = "boardStateUpdate";
 }

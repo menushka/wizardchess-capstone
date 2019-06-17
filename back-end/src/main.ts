@@ -27,6 +27,25 @@ io.on(Events.CONNECTION, (socket: SocketIO.Socket) => {
     }
 });
 
+expressServer.get("/game/:id", (request, response) => {
+    const id = request.params.id;
+    const game = GameManager.instance.getGame(id);
+    if (game) {
+        let res = "<table style='text-align: center;'>";
+        for (const row of game.boardState) {
+            res += "<tr>";
+            for (const location of row) {
+                res += "<td>" + (location === "" ? "--" : location) + "</td>";
+            }
+            res += "</tr>";
+        }
+        res += "</table>";
+        response.send(res);
+    } else {
+        response.send("No game found for " + id);
+    }
+});
+
 httpServer.listen(Config.PORT, () => {
     console.log("Server started on port:" + Config.PORT);
 });
