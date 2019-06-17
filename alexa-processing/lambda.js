@@ -10,12 +10,6 @@ const JOIN_GAME = "joinGame";
 const CHESS_PIECE_MOVED = "chessPieceMoved";
 const SURRENDER_GAME = "surrenderGame";
 
-const ALEXA_CONNECTION_CONFIRM = "alexaConnectionConfirm";
-const START_GAME_CONFIRM = "startGameConfirm";
-const JOIN_GAME_CONFIRM = "joinGameConfirm";
-const CHESS_PIECE_MOVED_CONFIRM = "chessPieceMovedConfirm";
-const SURRENDER_GAME_CONFIRM = "surrenderGameConfirm";
-
 const RESPONSE_TIMEOUT = 1000;
 
 class SocketManager {
@@ -26,9 +20,9 @@ class SocketManager {
   emit(userId, eventName, data) {
     return new Promise((resolve, reject) => {
       data.userId = userId;
-      const onConfirm = () => {
+      const onConfirm = (response) => {
         this.socket.off(eventName + "Confirm", onConfirm);
-        resolve(data);
+        resolve(response);
       };
       this.socket.on(eventName + "Confirm", onConfirm);
 
@@ -48,7 +42,7 @@ const LaunchRequestHandler = {
     const userId = handlerInput.requestEnvelope.session.user.userId;
 
     let speechText = '';
-    await socketManager.emit(userId, 'alexaConnection', {})
+    await socketManager.emit(userId, ALEXA_CONNECTION, {})
     .then(() => {
       speechText = 'Welcome to Wizard Chess!';
     })
@@ -76,11 +70,11 @@ const StartGameIntentHandler = {
     const type = slots["TYPE"].value;
 
     let speechText = '';
-    await socketManager.emit(userId, 'startGame', {
+    await socketManager.emit(userId, START_GAME, {
       type: type
     })
-    .then(() => {
-      speechText = 'Game started!';
+    .then((data) => {
+      speechText = 'Game started! Your game code is <say-as interpret-as="digits">' + data.gameId + "</say-as>.";
     })
     .catch(() => {
       speechText = 'Error starting game.';
@@ -106,7 +100,7 @@ const JoinGameIntentHandler = {
     const gameId = slots["GAME_ID"].value;
 
     let speechText = '';
-    await socketManager.emit(userId, 'joinGame', {
+    await socketManager.emit(userId, JOIN_GAME, {
       gameId: gameId
     })
     .then(() => {
@@ -138,7 +132,7 @@ const MovePieceIntentHandler = {
     const boardPosition = slots["BOARD_POSITION"].value;
 
     let speechText = '';
-    await socketManager.emit(userId, 'chessPieceMoved', {
+    await socketManager.emit(userId, CHESS_PIECE_MOVED, {
       chessPiece: chessPiece,
       boardPosition: boardPosition
     })
@@ -167,7 +161,7 @@ const SurrenderIntentHandler = {
     const userId = handlerInput.requestEnvelope.session.user.userId;
 
     let speechText = '';
-    await socketManager.emit(userId, 'surrenderGame', {})
+    await socketManager.emit(userId, SURRENDER_GAME, {})
     .then(() => {
       speechText = 'Game surrendered.';
     })

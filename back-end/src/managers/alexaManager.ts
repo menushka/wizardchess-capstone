@@ -1,3 +1,4 @@
+import { ChessBoard } from "../data/chessboard";
 import { Events } from "../events";
 import { IAlexaConnection, IAlexaJoin, IAlexaMovePiece, IAlexaStart, IAlexaSurrender } from "../interfaces/alexa";
 import { IGameStarted } from "../interfaces/connection";
@@ -52,22 +53,30 @@ export class AlexaManager {
         });
 
         this.alexaSocket.on(Events.JOIN_GAME, (data: IAlexaJoin) => {
-            GameManager.instance.joinGame(data.userId, data.gameId, (gameId: string) => {
-                this.alexaPlayers[data.userId] = gameId;
+            GameManager.instance.joinGame(data.userId, data.gameId, (game: ChessBoard) => {
+                this.alexaPlayers[data.userId] = game.id;
+                this.send(data.userId, Events.JOIN_GAME_CONFIRM, {
+                    gameId: game.id,
+                    board: game.boardState
+                });
             });
         });
 
         this.alexaSocket.on(Events.CHESS_PIECE_MOVED, (data: IAlexaMovePiece) => {
-            GameManager.instance.moveChessPiece(
+            const game = GameManager.instance.moveChessPiece(
                 data.userId,
                 this.alexaPlayers[data.userId],
                 data.chessPiece,
                 data.boardPosition
             );
+            this.send(data.userId, Events.CHESS_PIECE_MOVED_CONFIRM, {
+                board: game.boardState
+            });
         });
 
         this.alexaSocket.on(Events.SURRENDER_GAME, (data: IAlexaSurrender) => {
             GameManager.instance.surrender(this.alexaPlayers[data.userId], data.userId);
+            this.send(data.userId, Events.SURRENDER_GAME_CONFIRM, {});
         });
     }
 

@@ -1,3 +1,4 @@
+import { ChessBoard } from "../data/chessboard";
 import { Events } from "../events";
 import { IChessPieceMoved, IGameStarted, IJoinGame, IStartGame, ISurrenderGame } from "../interfaces/connection";
 import { GameManager } from "./gameManager";
@@ -39,17 +40,30 @@ export class PlayerManager {
         });
 
         this.playerSockets[socketId].on(Events.JOIN_GAME, (data: IJoinGame) => {
-            GameManager.instance.joinGame(socketId, data.gameId, (gameId: string) => {
-                this.playerGames[socketId] = gameId;
+            GameManager.instance.joinGame(socketId, data.gameId, (game: ChessBoard) => {
+                this.playerGames[socketId] = game.id;
+                this.send(socketId, Events.JOIN_GAME_CONFIRM, {
+                    gameId: game.id,
+                    board: game.boardState
+                });
             });
         });
 
         this.playerSockets[socketId].on(Events.CHESS_PIECE_MOVED, (data: IChessPieceMoved) => {
-            GameManager.instance.moveChessPiece(socketId, this.playerGames[socketId], data.piece, data.location);
+            const game = GameManager.instance.moveChessPiece(
+                socketId,
+                this.playerGames[socketId],
+                data.piece,
+                data.location
+            );
+            this.send(socketId, Events.CHESS_PIECE_MOVED_CONFIRM, {
+                board: game.boardState
+            });
         });
 
         this.playerSockets[socketId].on(Events.SURRENDER_GAME, (data: ISurrenderGame) => {
             GameManager.instance.surrender(this.playerGames[socketId], socketId);
+            this.send(socketId, Events.SURRENDER_GAME_CONFIRM, {});
         });
     }
 

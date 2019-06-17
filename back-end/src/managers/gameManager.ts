@@ -19,15 +19,18 @@ export class GameManager {
         return this.createNewGame(userId, type);
     }
 
-    public joinGame(userId: string, gameId: string, cb: (gameId: string) => void) {
+    public joinGame(userId: string, gameId: string, cb: (game: ChessBoard) => void) {
         if (this.games[gameId]) {
-            this.games[gameId].join(userId);
-            cb(gameId);
+            const response = this.games[gameId].join(userId);
+            if (response) {
+                cb(this.games[gameId]);
+            }
         }
     }
 
     public moveChessPiece(userId: string, gameId: string, chessPiece: ChessPiece, boardLocation: BoardLocation) {
         this.games[gameId].movePiece(userId, chessPiece, boardLocation);
+        return this.games[gameId];
     }
 
     public surrender(gameId: string, userId: string) {

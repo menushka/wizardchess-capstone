@@ -15,18 +15,19 @@ export class ChessBoard implements IChessBoard {
     constructor(userId: string, type: GameType, gameId: string) {
         this.id = gameId;
         this.type = type;
-        this.randomAssignWhiteOrBlack(userId);
-        if (this.type === GameType.AI) {
-            this.state = ChessBoardState.Playing;
-        } else if (this.type === GameType.Player) {
-            this.state = ChessBoardState.Waiting;
-        }
         this.currentTurn = 0;
         this.setDefaultBoardState();
+
+        this.state = ChessBoardState.Waiting;
+        this.randomAssignWhiteOrBlack(userId);
+        if (this.type === GameType.AI) {
+            this.assignRemainder("AI");
+        }
     }
 
-    public join(userId: string) {
-        this.assignRemainder(userId);
+    public join(userId: string): boolean {
+        if (this.state === ChessBoardState.Playing) { return false; }
+        return this.assignRemainder(userId);
     }
 
     public movePiece(userId: string, piece: ChessPiece, location: BoardLocation) {
@@ -75,6 +76,7 @@ export class ChessBoard implements IChessBoard {
         } else if (this.blackUser) {
             this.whiteUser = userId;
         }
+        return true;
     }
 
     private getCurrentUser() {
