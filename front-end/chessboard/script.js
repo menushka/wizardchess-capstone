@@ -4,6 +4,15 @@ var game = new Chess()
 var squareToHighlight = null
 var squareClass = 'square-55d63'
 
+var pieces = {
+  'p': "P",
+  'r': "R",
+  'n': "N",
+  'b': "B",
+  'q': "Q",
+  'k': "K",
+}
+
 const socket = io('http://localhost:8000', { query: { client:"frontend" } });
 
 var onevent = socket.onevent;
@@ -14,11 +23,6 @@ packet.data = ["*"].concat(args);
 onevent.call(this, packet);      // additional call to catch-all
 };
 
-socket.on("*",function(event,data) {
-console.log(event);
-console.log(data);
-});
-
 function removeHighlights (color) {
   $board.find('.' + squareClass)
     .removeClass('highlight-' + color)
@@ -28,10 +32,12 @@ function onDragStart (source, piece, position, orientation) {
   // do not pick up pieces if the game is over
   if (game.game_over()) return false
 
-  // only pick up pieces for White
-  if (piece.search(/^b/) !== -1) return false
+  // only pick up pieces for the side to move
+  // if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+  //     (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+  //   return false
+  // }
 }
-
 function makeRandomMove () {
   var possibleMoves = game.moves({
     verbose: true
@@ -73,11 +79,14 @@ function onDrop (source, target) {
   })
 
   // illegal move
+
+  console.log(move);
+
   if (move === null) return 'snapback'
 
   // highlight white's move
 
-  console.log(move);
+  // console.log(move);
 
   removeHighlights('white')
   $board.find('.square-' + source).addClass('highlight-white')
@@ -85,22 +94,24 @@ function onDrop (source, target) {
 
   ChessPiece = {
     piece: move.piece,
-    colour: move.colour
+    colour: move.color
   }
-  
+
   BoardLocation = {
     from: move.from,
     to: move.to
   }
 
-  socket.emit('chessPieceM1oved', {
-    piece: move.piece,
-    colour: move.colour,
+  // console.log(move);
+  // console.log(pieces[move.piece]);
+
+  socket.emit('chessPieceMoved', {
+    piece: pieces[move.piece],
     location: move.to
   });
 
   // make random move for black
-  window.setTimeout(makeRandomMove, 250)
+  // window.setTimeout(makeRandomMove, 250)
 }
 
 function onMoveEnd () {
@@ -114,65 +125,6 @@ function onSnapEnd () {
   board.position(game.fen())
 }
 
-// function fenAnalysis(event) {
-//     var pattern = /bestmove (\w+)(?: ponder (\w+))?/
-//     var re = new RegExp(pattern)
-
-//     if (re.test(event)) {
-//         x = re.exec(event)
-//         res = {
-//             bestmove: {
-//                 raw: x[1]
-//             },
-//             ponder: {
-//                 raw: x[2]
-//             }
-//         }
-//         return res
-//     } else {
-//         return null
-//     }
-// }
-
-// //Input FEN
-// function postFen({
-//     engine,
-//     depth,
-//     fen
-// } = {}) {
-//     engine.postMessage(`position fen ${fen}`)
-//     engine.postMessage(`go depth ${depth}`)
-// }
-
-// function printGameState(){
-//     console.log(
-//         `
-//         Game Over: ${chess.game_over()}
-//         Turn: ${chess.turn()}
-//         Checkmate: ${chess.in_checkmate()}
-//         Stalemate: ${chess.in_stalemate()}
-//         Threefold Repitition: ${chess.in_threefold_repetition()}
-//         fen: ${chess.fen()}
-//         `
-//     );
-// }
-
-
-// fish.onmessage = async event => {
-
-//     analysis = fenAnalysis(event)
-//     if (analysis) {
-//         // console.log(analysis.bestmove.raw)
-//         console.log(analysis);
-//         console.log(`next_move: ${analysis.bestmove.raw} | ${chess.turn()}`)
-//         chess.move(analysis.bestmove.raw, {
-//             sloppy: true
-//         })
-//         console.log(chess.ascii());
-//         printGameState();
-//     }
-// }
-
 var config = {
   draggable: true,
   position: 'start',
@@ -185,3 +137,13 @@ var config = {
 socket.emit('startGame',  { type: 1});
 
 board = Chessboard('board1', config)
+
+socket.on("startGameConfirm",function(data) {
+  console.log(data);
+  });
+  
+socket.on("chessPieceMovedConfirm",function(data) {
+  console.log(data);
+  game.load(data.fen)
+  board.position(data.fen)
+  });

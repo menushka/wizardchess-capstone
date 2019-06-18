@@ -7,10 +7,12 @@ import { Events } from "./events";
 import { AlexaManager } from "./managers/alexaManager";
 import { GameManager } from "./managers/gameManager";
 import { PlayerManager } from "./managers/playerManager";
+import { StockfishManager } from "./managers/stockfishManager";
 
 const alexaManager = new AlexaManager();
 const gameManager = new GameManager();
 const playerManager = new PlayerManager();
+const stockfishManager = new StockfishManager();
 
 const expressServer = express();
 const httpServer = http.createServer(expressServer);

@@ -1,4 +1,4 @@
-import { BoardLocation, ChessPiece, IChessBoard } from "./general";
+import { BoardLocation, ChessPiece, IChessBoard, ChessColor } from "./general";
 
 export interface IConnect {}
 

@@ -1,6 +1,10 @@
 import { BoardLocation, ChessPiece, GameType, IChessBoard } from "../interfaces/general";
 import { AlexaManager } from "../managers/alexaManager";
 import { PlayerManager } from "../managers/playerManager";
+import { StockfishManager } from "../managers/stockfishManager";
+
+import * as chessjs from "chess.js";
+const stockfish = require("stockfish");
 
 export class ChessBoard implements IChessBoard {
 
@@ -11,11 +15,17 @@ export class ChessBoard implements IChessBoard {
     public whiteUser: string;
     public boardState: string[][];
     public currentTurn: number;
+    public Chess: any;
+    public fen: string;
+    
+    private pastfen: string;
 
     constructor(userId: string, type: GameType, gameId: string) {
         this.id = gameId;
         this.type = type;
         this.currentTurn = 0;
+        this.Chess = new chessjs.Chess();
+
         this.setDefaultBoardState();
 
         this.state = ChessBoardState.Waiting;
@@ -30,24 +40,29 @@ export class ChessBoard implements IChessBoard {
         return this.assignRemainder(userId);
     }
 
-    public movePiece(userId: string, piece: ChessPiece, location: BoardLocation) {
+    public async movePiece(userId: string, piece: ChessPiece, location: BoardLocation) {
         if (this.getCurrentUser() !== userId) { return; }
 
-        const x = Math.floor(Math.random() * 8);
-        const y = Math.floor(Math.random() * 8);
-        let nx = Math.floor(Math.random() * 8);
-        let ny = Math.floor(Math.random() * 8);
-        while (true) {
-            if (x !== nx && y !== ny) {
-                break;
-            } else {
-                nx = Math.floor(Math.random() * 8);
-                ny = Math.floor(Math.random() * 8);
-            }
+        if (piece !== "P") {
+            this.Chess.move(piece + location);
+        } else {
+            this.Chess.move(location);
         }
-        this.boardState[ny][nx] = this.boardState[y][x];
-        this.boardState[y][x] = "";
-        this.currentTurn += 1;
+
+        setTimeout(() => {
+            this.fen = this.Chess.fen();
+        }, 50);
+
+        setTimeout(() => {
+            const test = StockfishManager.instance.postFen(2, this.Chess.fen());
+        }, 333);
+        setTimeout( () => {
+            const move = this.Chess.move(StockfishManager.instance.bestmoves.slice(-1)[0], {sloppy: true});
+            console.log(this.Chess.ascii());
+            console.log(this.Chess.fen());
+            this.fen = this.Chess.fen();
+            return true;
+        }, 666);
     }
 
     public surrender(userId: string) {
@@ -94,6 +109,7 @@ export class ChessBoard implements IChessBoard {
             ["W1", "W1", "W1", "W1", "W1", "W1", "W1", "W1"],
             ["W2", "W3", "W4", "W5", "W6", "W4", "W3", "W2"]
         ];
+        this.fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     }
 }
 

@@ -9,12 +9,12 @@ export enum ChessColor {
 }
 
 export enum ChessPiece {
-    PAWN = 1,
-    ROOK = 2,
-    KNIGHT = 3,
-    BISHOP = 4,
-    QUEEN = 5,
-    KING = 6
+    PAWN = "P",
+    ROOK = "R",
+    KNIGHT = "N",
+    BISHOP = "B",
+    QUEEN = "Q",
+    KING = "K"
 }
 
 export type BoardLocation = "A1"|"A2"|"A3"|"A4"|"A5"|"A6"|"A7"|"A8"|

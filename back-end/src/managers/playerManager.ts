@@ -49,16 +49,19 @@ export class PlayerManager {
             });
         });
 
-        this.playerSockets[socketId].on(Events.CHESS_PIECE_MOVED, (data: IChessPieceMoved) => {
-            const game = GameManager.instance.moveChessPiece(
+        this.playerSockets[socketId].on(Events.CHESS_PIECE_MOVED, async (data: IChessPieceMoved) => {
+            const game = await GameManager.instance.moveChessPiece(
                 socketId,
                 this.playerGames[socketId],
                 data.piece,
                 data.location
             );
-            this.send(socketId, Events.CHESS_PIECE_MOVED_CONFIRM, {
-                board: game.boardState
-            });
+            setTimeout(() => {
+                this.send(socketId, Events.CHESS_PIECE_MOVED_CONFIRM, {
+                    board: game.boardState,
+                    fen: game.fen
+                });
+            }, 6666);
         });
 
         this.playerSockets[socketId].on(Events.SURRENDER_GAME, (data: ISurrenderGame) => {

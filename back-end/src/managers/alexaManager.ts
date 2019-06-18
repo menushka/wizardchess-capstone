@@ -68,9 +68,10 @@ export class AlexaManager {
                 this.alexaPlayers[data.userId],
                 data.chessPiece,
                 data.boardPosition
-            );
-            this.send(data.userId, Events.CHESS_PIECE_MOVED_CONFIRM, {
-                board: game.boardState
+            ).then(game => {
+                this.send(data.userId, Events.CHESS_PIECE_MOVED_CONFIRM, {
+                    board: game.boardState
+                });
             });
         });
 
