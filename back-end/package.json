@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/main.js",
-    "watch": "tsc -p . --watch"
+    "watch": "tsc -p . --watch",
+    "tunnel": "autossh -M 0 -R wizardchess:80:localhost:8000 serveo.net",
+    "tslint": "tslint src/**/*.ts{,x}; exit 0;"
   },
   "author": "“Menushka <“contact@menushka.ca”>",
   "license": "ISC",
