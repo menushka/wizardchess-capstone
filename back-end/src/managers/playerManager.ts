@@ -56,12 +56,13 @@ export class PlayerManager {
                 data.piece,
                 data.location
             );
+
             setTimeout(() => {
                 this.send(socketId, Events.CHESS_PIECE_MOVED_CONFIRM, {
                     board: game.boardState,
                     fen: game.fen
                 });
-            }, 6666);
+            }, 1000 );
         });
 
         this.playerSockets[socketId].on(Events.SURRENDER_GAME, (data: ISurrenderGame) => {

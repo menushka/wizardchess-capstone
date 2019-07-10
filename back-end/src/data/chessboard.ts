@@ -16,8 +16,9 @@ export class ChessBoard implements IChessBoard {
     public boardState: string[][];
     public currentTurn: number;
     public Chess: any;
+    public chessHelper: any;
     public fen: string;
-    
+
     private pastfen: string;
 
     constructor(userId: string, type: GameType, gameId: string) {
@@ -40,29 +41,29 @@ export class ChessBoard implements IChessBoard {
         return this.assignRemainder(userId);
     }
 
-    public async movePiece(userId: string, piece: ChessPiece, location: BoardLocation) {
+    public movePiece(userId: string, piece: ChessPiece, location: any) {
         if (this.getCurrentUser() !== userId) { return; }
 
-        if (piece !== "P") {
-            this.Chess.move(piece + location);
-        } else {
-            this.Chess.move(location);
-        }
+        const move = this.Chess.move(location.from + location.to, {sloppy: true});
+        this.fen = this.Chess.fen();
+
+        StockfishManager.instance.postFen(2, this.fen); // stockfish Move
 
         setTimeout(() => {
-            this.fen = this.Chess.fen();
-        }, 50);
-
-        setTimeout(() => {
-            const test = StockfishManager.instance.postFen(2, this.Chess.fen());
-        }, 333);
-        setTimeout( () => {
-            const move = this.Chess.move(StockfishManager.instance.bestmoves.slice(-1)[0], {sloppy: true});
+            this.Chess.move(StockfishManager.instance.bestmoves.slice(-1)[0], { sloppy: true }); // stockfish Move
             console.log(this.Chess.ascii());
-            console.log(this.Chess.fen());
             this.fen = this.Chess.fen();
-            return true;
-        }, 666);
+
+            this.chessHelper = this.moveHelper(this.fen)
+        }, 500);
+    }
+
+    public moveHelper(fen: string) {
+        StockfishManager.instance.postFen(5, fen); // Moves for player | fixed depth 5
+        this.chessHelper = {
+            stockfish: StockfishManager.instance.bestmoves
+        }
+        return StockfishManager.instance.bestmoves;
     }
 
     public surrender(userId: string) {

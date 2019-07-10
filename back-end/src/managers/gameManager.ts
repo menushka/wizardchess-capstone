@@ -28,7 +28,8 @@ export class GameManager {
         }
     }
 
-    public async moveChessPiece(userId: string, gameId: string, chessPiece: ChessPiece, boardLocation: BoardLocation) {
+// tslint:disable-next-line: max-line-length
+    public async moveChessPiece(userId: string, gameId: string, chessPiece: ChessPiece, boardLocation: any) {
         await this.games[gameId].movePiece(userId, chessPiece, boardLocation);
         return this.games[gameId];
     }

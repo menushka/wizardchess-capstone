@@ -60,7 +60,6 @@ function makeRandomMove () {
 }
 
 function stockfishMove () {
-    
   // highlight black's move
   removeHighlights('black')
   $board.find('.square-' + move.from).addClass('highlight-black')
@@ -107,7 +106,11 @@ function onDrop (source, target) {
 
   socket.emit('chessPieceMoved', {
     piece: pieces[move.piece],
-    location: move.to
+    location: {
+      from: move.from,
+      to: move.to
+    }
+    
   });
 
   // make random move for black

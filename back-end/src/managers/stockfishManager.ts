@@ -6,19 +6,24 @@ export class StockfishManager {
 
     public bestmoves: string[] = [];
     public ponders: string[] = [];
+    public isUpdating: boolean = false;
+
     private fish: any;
+    private fishGames: { [id: string]: any };
 
     constructor() {
         StockfishManager.instance = this;
         this.fish = stockfish();
-        this.fish.onmessage = async (event: any) => {
-            const analysis = await this.fenAnalysis(event)
+        this.fish.onmessage = (event: any) => {
+            this.isUpdating = true;
+            const analysis = this.fenAnalysis(event)
             if (analysis) {
                 console.log(analysis);
-                await this.bestmoves.push(analysis.bestmove.raw)
-                await this.ponders.push(analysis.ponder.raw)
+                this.bestmoves.push(analysis.bestmove.raw)
+                this.ponders.push(analysis.ponder.raw)
             }
-        }
+            this.isUpdating = false;
+        };
     }
 
     public fenAnalysis(fen: string) {
@@ -42,8 +47,8 @@ export class StockfishManager {
     }
 
     public postFen(depth: number, fen: string) {
-        console.log(fen);
-        this.fish.postMessage(`position fen ${fen}`)
-        this.fish.postMessage(`go depth ${depth}`)
+        console.log("Analyzing:" + fen);
+        this.fish.postMessage(`position fen ${fen}`);
+        this.fish.postMessage(`go depth ${depth}`);
     }
 }

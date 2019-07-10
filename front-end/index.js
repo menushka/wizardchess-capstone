@@ -59,9 +59,10 @@ fish.onmessage = async event => {
 
     analysis = fenAnalysis(event)
     if (analysis) {
+        console.log(event);
         // console.log(analysis.bestmove.raw)
-        console.log(analysis);
-        console.log(`next_move: ${analysis.bestmove.raw} | ${chess.turn()}`)
+        // console.log(analysis);
+        // console.log(`next_move: ${analysis.bestmove.raw} | ${chess.turn()}`)
         chess.move(analysis.bestmove.raw, {
             sloppy: true
         })

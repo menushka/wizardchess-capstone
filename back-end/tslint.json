@@ -11,7 +11,11 @@
         "no-shadowed-variable": false,
         "no-empty": false,
         "object-literal-shorthand": false,
-        "object-literal-sort-keys": false
+        "object-literal-sort-keys": false,
+        "max-line-length": false
     },
     "rulesDirectory": []
 }
+
+
+// tslint:disable-next-line: max-line-length
