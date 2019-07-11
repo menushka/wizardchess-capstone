@@ -4,7 +4,6 @@ import { PlayerManager } from "../managers/playerManager";
 import { StockfishManager } from "../managers/stockfishManager";
 
 import * as chessjs from "chess.js";
-const stockfish = require("stockfish");
 
 export class ChessBoard implements IChessBoard {
 
@@ -18,8 +17,6 @@ export class ChessBoard implements IChessBoard {
     public Chess: any;
     public chessHelper: any;
     public fen: string;
-
-    private pastfen: string;
 
     constructor(userId: string, type: GameType, gameId: string) {
         this.id = gameId;
@@ -54,7 +51,7 @@ export class ChessBoard implements IChessBoard {
             console.log(this.Chess.ascii());
             this.fen = this.Chess.fen();
 
-            this.chessHelper = this.moveHelper(this.fen)
+            this.chessHelper = this.moveHelper(this.fen);
         }, 500);
     }
 
@@ -62,7 +59,7 @@ export class ChessBoard implements IChessBoard {
         StockfishManager.instance.postFen(5, fen); // Moves for player | fixed depth 5
         this.chessHelper = {
             stockfish: StockfishManager.instance.bestmoves
-        }
+        };
         return StockfishManager.instance.bestmoves;
     }
 
