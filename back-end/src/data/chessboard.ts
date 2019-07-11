@@ -88,7 +88,10 @@ export class ChessBoard implements IChessBoard {
             this.blackUser = userId;
         } else if (this.blackUser) {
             this.whiteUser = userId;
+        } else {
+            return false;
         }
+        this.state = ChessBoardState.Playing;
         return true;
     }
 
@@ -112,5 +115,7 @@ export class ChessBoard implements IChessBoard {
 }
 
 enum ChessBoardState {
-    Waiting, Playing, Finished
+    Waiting = "Waiting",
+    Playing = "Playing",
+    Finished = "Finished"
 }

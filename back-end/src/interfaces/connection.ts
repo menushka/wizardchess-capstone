@@ -8,13 +8,20 @@ export interface IStartGame {
     type: number;
 }
 
-export interface IGameStarted {
+export interface IStartGameConfirm {
     gameId: string;
+    status: string;
     board: string[][];
 }
 
 export interface IJoinGame {
     gameId: string;
+}
+
+export interface IJoinGameConfirm {
+    gameId: string;
+    status: string;
+    board: string[][];
 }
 
 export interface IChessPieceMoved {
@@ -25,5 +32,6 @@ export interface IChessPieceMoved {
 export interface ISurrenderGame {}
 
 export interface IBoardStateUpdate {
-    board: IChessBoard;
+    status: string;
+    board: string[][];
 }

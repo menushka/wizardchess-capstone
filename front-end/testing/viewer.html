@@ -1,0 +1,15 @@
+<html>
+<head>
+    <title>ChessDebug</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
+    <script>
+        const socket = io('http://localhost:8000', { query: { client:"viewer" } });
+        socket.on("boardStateUpdate",function(event,data) {
+		    document.body.innerHTML = data;
+		});
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

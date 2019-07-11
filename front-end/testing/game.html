@@ -1,0 +1,83 @@
+<html>
+<head>
+    <title>ChessDebug</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
+    <script>
+        const socket = io('http://localhost:8000', { query: { client:"frontend" } });
+
+        function send(event, data) {
+            console.log(event, data);
+            socket.emit(event, data);
+        }
+
+        function startPVAI() {
+            send("startGame", { type: 0 });
+        }
+
+        function startPVP() {
+            send("startGame", { type: 1 });
+        }
+
+        function joinPVP() {
+            send("joinGame", { gameId: document.getElementById("joinPVPGameID").value });
+        }
+
+        function moveChessPiece() {
+            send("chessPieceMove", {
+                piece: document.getElementById("gamePiece").value,
+                location: document.getElementById("gameLocation").value
+            });
+        }
+
+        socket.on("connectionConfirm",function(data) {
+            console.log("connectionConfirm", data);
+		    document.getElementById("main").style.visibility = "visible";
+		});
+
+        socket.on("startGameConfirm",function(data) {
+            console.log("startGameConfirm", data);
+            document.getElementById("gameGameID").innerHTML = data.gameId;
+            document.getElementById("gameStatus").innerHTML = data.status;
+            document.getElementById("gameChessboard").innerHTML = data.board;
+        });
+
+        socket.on("joinGameConfirm",function(data) {
+            console.log("joinGameConfirm", data);
+            document.getElementById("gameGameID").innerHTML = data.gameId;
+            document.getElementById("gameStatus").innerHTML = data.status;
+            document.getElementById("gameChessboard").innerHTML = data.board;
+        });
+
+        socket.on("boardStateUpdate",function(data) {
+            console.log("boardStateUpdate", data);
+            document.getElementById("gameStatus").innerHTML = data.status;
+            document.getElementById("gameChessboard").innerHTML = data.board;
+        });
+
+        socket.on("surrenderGameConfirm",function(data) {
+            console.log("surrenderGameConfirm", data);
+            document.getElementById("gameStatus").innerHTML = data.status;
+            document.getElementById("gameChessboard").innerHTML = data.board;
+        });
+    </script>
+</head>
+<body>
+    <div id="main" style="visibility: hidden;">
+        <div>
+            <button onclick="startPVAI()">Start PVAI Game</button><br/>
+            <button onclick="startPVP()">Start PVP Game</button><br/>
+            <button onclick="joinPVP()">Join PVP Game</button>
+            <input id="joinPVPGameID" type="text">
+        </div>
+        <div>
+            Game Status:<span id="gameStatus"></span><br/>
+            Game ID:<span id="gameGameID"></span><br/>
+            <button onclick="moveChessPiece()">Move Chess Piece</button>
+            Piece:<input id="gamePiece" type="text">
+            Location:<input id="gameLocation" type="text">
+            <br/>
+            <div id="gameChessboard"></div>
+        </div>
+    </div>
+</body>
+</html>

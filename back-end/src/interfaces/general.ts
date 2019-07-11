@@ -1,6 +1,6 @@
 export enum GameType {
-    AI = 1,
-    Player = 2
+    AI = 0,
+    Player = 1
 }
 
 export enum ChessColor {
