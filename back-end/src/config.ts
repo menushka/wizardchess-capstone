@@ -3,4 +3,5 @@ export class Config {
 
     public static CLIENT_TYPE_PLAYER = "frontend";
     public static CLIENT_TYPE_ALEXA = "alexa";
+    public static CLIENT_TYPE_VIEWER = "viewer";
 }

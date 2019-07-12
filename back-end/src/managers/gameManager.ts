@@ -36,6 +36,7 @@ export class GameManager {
 
     public surrender(gameId: string, userId: string) {
         this.games[gameId].surrender(userId);
+        return this.games[gameId];
     }
 
     private createNewGame(userId: string, type: GameType): ChessBoard {

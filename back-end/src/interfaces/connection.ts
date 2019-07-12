@@ -8,22 +8,33 @@ export interface IStartGame {
     type: number;
 }
 
-export interface IGameStarted {
+export interface IStartGameConfirm {
     gameId: string;
-    board: string[][];
+    status: string;
+    board: string;
 }
 
 export interface IJoinGame {
     gameId: string;
 }
 
+export interface IJoinGameConfirm {
+    gameId: string;
+    status: string;
+    board: string;
+}
+
 export interface IChessPieceMoved {
     piece: ChessPiece;
-    location: BoardLocation;
+    location: {
+        from: BoardLocation;
+        to: BoardLocation;
+    };
 }
 
 export interface ISurrenderGame {}
 
 export interface IBoardStateUpdate {
-    board: IChessBoard;
+    status: string;
+    board: string;
 }

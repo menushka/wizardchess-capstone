@@ -12,7 +12,6 @@ export class ChessBoard implements IChessBoard {
     public state: ChessBoardState;
     public blackUser: string;
     public whiteUser: string;
-    public boardState: string[][];
     public currentTurn: number;
     public Chess: any;
     public chessHelper: any;
@@ -116,7 +115,10 @@ export class ChessBoard implements IChessBoard {
             this.blackUser = userId;
         } else if (this.blackUser) {
             this.whiteUser = userId;
+        } else {
+            return false;
         }
+        this.state = ChessBoardState.Playing;
         return true;
     }
 
@@ -125,20 +127,12 @@ export class ChessBoard implements IChessBoard {
     }
 
     private setDefaultBoardState() {
-        this.boardState = [
-            ["B2", "B3", "B4", "B5", "B6", "B4", "B3", "B2"],
-            ["B1", "B1", "B1", "B1", "B1", "B1", "B1", "B1"],
-            ["", "", "", "", "", "", "", ""],
-            ["", "", "", "", "", "", "", ""],
-            ["", "", "", "", "", "", "", ""],
-            ["", "", "", "", "", "", "", ""],
-            ["W1", "W1", "W1", "W1", "W1", "W1", "W1", "W1"],
-            ["W2", "W3", "W4", "W5", "W6", "W4", "W3", "W2"]
-        ];
         this.fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     }
 }
 
 enum ChessBoardState {
-    Waiting, Playing, Finished
+    Waiting = "Waiting",
+    Playing = "Playing",
+    Finished = "Finished"
 }
