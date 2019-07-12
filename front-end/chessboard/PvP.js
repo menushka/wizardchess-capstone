@@ -33,30 +33,10 @@ function onDragStart (source, piece, position, orientation) {
   if (game.game_over()) return false
 
   // only pick up pieces for the side to move
-  // if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-  //     (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-  //   return false
-  // }
-}
-function makeRandomMove () {
-  var possibleMoves = game.moves({
-    verbose: true
-  })
-
-  // game over
-  if (possibleMoves.length === 0) return
-
-  var randomIdx = Math.floor(Math.random() * possibleMoves.length)
-  var move = possibleMoves[randomIdx]
-  game.move(move.san)
-
-  // highlight black's move
-  removeHighlights('black')
-  $board.find('.square-' + move.from).addClass('highlight-black')
-  squareToHighlight = move.to
-
-  // update the board to the new position
-  board.position(game.fen())
+  if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+      (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+    return false
+  }
 }
 
 function stockfishMove () {
@@ -67,6 +47,20 @@ function stockfishMove () {
 
   // update the board to the new position
   board.position(game.fen())
+}
+
+var whiteSquareGrey = '#32CD32'
+var blackSquareGrey = '#00FF00'
+
+function greySquare (square) {
+  var $square = $('#board1 .square-' + square)
+
+  var background = whiteSquareGrey
+  if ($square.hasClass('black-3c85d')) {
+    background = blackSquareGrey
+  }
+
+  $square.css('background', background)
 }
 
 function onDrop (source, target) {
@@ -84,9 +78,6 @@ function onDrop (source, target) {
   if (move === null) return 'snapback'
 
   // highlight white's move
-
-  // console.log(move);
-
   removeHighlights('white')
   $board.find('.square-' + source).addClass('highlight-white')
   $board.find('.square-' + target).addClass('highlight-white')
@@ -149,4 +140,7 @@ socket.on("chessPieceMovedConfirm",function(data) {
   console.log(data);
   game.load(data.fen)
   board.position(data.fen)
+
+  greySquare(data.chessHelper.from)
+  greySquare(data.chessHelper.to)
   });

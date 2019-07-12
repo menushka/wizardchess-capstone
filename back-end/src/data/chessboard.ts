@@ -44,23 +44,51 @@ export class ChessBoard implements IChessBoard {
         const move = this.Chess.move(location.from + location.to, {sloppy: true});
         this.fen = this.Chess.fen();
 
-        StockfishManager.instance.postFen(2, this.fen); // stockfish Move
+        // temp code until socket update
 
-        setTimeout(() => {
-            this.Chess.move(StockfishManager.instance.bestmoves.slice(-1)[0], { sloppy: true }); // stockfish Move
-            console.log(this.Chess.ascii());
-            this.fen = this.Chess.fen();
+        // switch (this.type) {
+        //     case 1: // PvAI
+        //         this.stockfishMove(2, this.fen)
+        //         break;
+        //     case 2: // PvP
 
-            this.chessHelper = this.moveHelper(this.fen);
-        }, 500);
+        //         break;
+        // }
+
+        this.stockfishMovePromise(2, this.fen).then((fen: string) => {
+            this.moveHelper(5, fen);
+        }).catch((reject) => {
+            console.log(reject);
+        });
     }
 
-    public moveHelper(fen: string) {
-        StockfishManager.instance.postFen(5, fen); // Moves for player | fixed depth 5
-        this.chessHelper = {
-            stockfish: StockfishManager.instance.bestmoves
-        };
-        return StockfishManager.instance.bestmoves;
+    public stockfishMovePromise(depth: number, fen: string) {
+        return new Promise((resolve, reject) => {
+            StockfishManager.instance.postFen(depth, fen);
+            setTimeout(() => {
+                const move = this.Chess.move(StockfishManager.instance.bestmoves.slice(-1)[0], { sloppy: true });
+                console.log(this.Chess.ascii());
+                this.fen = this.Chess.fen();
+                if (move == null) {
+                    if (this.Chess.game_over() === true) {
+                        reject("Game Over");
+                    }
+                    reject("Invalid Move (Parse Failed on Move)");
+                } else {
+                    resolve(this.fen);
+                }
+            }, 50);
+        });
+    }
+
+    public moveHelper(depth: number, fen: string) {
+        StockfishManager.instance.postFen(depth, fen); // Moves for player
+        setTimeout(() => {
+            this.chessHelper = {
+                from: StockfishManager.instance.bestmoves.slice(-1)[0].substring(0, 2),
+                to: StockfishManager.instance.bestmoves.slice(-1)[0].substring(2, 4)
+            };
+        }, 50);
     }
 
     public surrender(userId: string) {

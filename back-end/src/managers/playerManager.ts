@@ -60,7 +60,8 @@ export class PlayerManager {
             setTimeout(() => {
                 this.send(socketId, Events.CHESS_PIECE_MOVED_CONFIRM, {
                     board: game.boardState,
-                    fen: game.fen
+                    fen: game.fen,
+                    chessHelper: game.chessHelper
                 });
             }, 1000 );
         });
