@@ -11,7 +11,7 @@ export interface IStartGame {
 export interface IStartGameConfirm {
     gameId: string;
     status: string;
-    board: string[][];
+    board: string;
 }
 
 export interface IJoinGame {
@@ -21,17 +21,20 @@ export interface IJoinGame {
 export interface IJoinGameConfirm {
     gameId: string;
     status: string;
-    board: string[][];
+    board: string;
 }
 
 export interface IChessPieceMoved {
     piece: ChessPiece;
-    location: BoardLocation;
+    location: {
+        from: BoardLocation;
+        to: BoardLocation;
+    };
 }
 
 export interface ISurrenderGame {}
 
 export interface IBoardStateUpdate {
     status: string;
-    board: string[][];
+    board: string;
 }

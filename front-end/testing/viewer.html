@@ -3,24 +3,12 @@
     <title>ChessDebug</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
     <script>
-        function genTable(board) {
-            let result = "<table>"
-            for (const row of board) {
-                result += "<tr>";
-                for (const item of row) {
-                    result += "<td height='30' width='30'>" + item + "</td>";
-                }
-                result += "</tr>";
-            }
-            return result + "</table>"
-        }
-
         const socket = io('http://localhost:8000', { query: {
             client:"viewer",
             gameId: location.href.substring(location.href.lastIndexOf('/') + 1)
         } });
         socket.on("boardStateUpdate",function(data) {
-		    document.body.innerHTML = genTable(data.board);
+		    document.body.innerHTML = data.board;
 		});
     </script>
     <style>

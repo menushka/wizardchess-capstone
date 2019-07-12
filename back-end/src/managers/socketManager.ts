@@ -32,7 +32,7 @@ export class SocketManager {
         if (game) {
             socket.emit(Events.BOARD_STATE_UPDATE, {
                 status: game.state,
-                board: game.boardState
+                board: game.fen
             } as IBoardStateUpdate);
         }
     }

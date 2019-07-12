@@ -45,7 +45,7 @@ export class AlexaManager {
             SocketManager.instance.send([data.userId], Events.START_GAME_CONFIRM, {
                 gameId: game.id,
                 status: game.state,
-                board: game.boardState
+                board: game.fen
             } as IStartGameConfirm);
         });
 
@@ -55,7 +55,7 @@ export class AlexaManager {
                 SocketManager.instance.send([data.userId], Events.JOIN_GAME_CONFIRM, {
                     gameId: game.id,
                     status: game.state,
-                    board: game.boardState
+                    board: game.fen
                 });
             });
         });
@@ -68,10 +68,10 @@ export class AlexaManager {
                 data.boardPosition
             );
             SocketManager.instance.send([data.userId], Events.CHESS_PIECE_MOVED_CONFIRM, {
-                board: game.boardState
+                board: game.fen
             });
             SocketManager.instance.send([game.whiteUser, game.blackUser], Events.CHESS_PIECE_MOVED_CONFIRM, {
-                board: game.boardState
+                board: game.fen
             }, game.id);
         });
 
@@ -80,7 +80,7 @@ export class AlexaManager {
             SocketManager.instance.send([data.userId], Events.SURRENDER_GAME_CONFIRM, {});
             SocketManager.instance.send([game.whiteUser, game.blackUser], Events.BOARD_STATE_UPDATE, {
                 status: game.state,
-                board: game.boardState
+                board: game.fen
             } as IBoardStateUpdate,
                 game.id
             );

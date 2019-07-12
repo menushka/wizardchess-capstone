@@ -36,7 +36,7 @@ export class PlayerManager {
             SocketManager.instance.send([socket.id], Events.START_GAME_CONFIRM, {
                 gameId: game.id,
                 status: game.state,
-                board: game.boardState
+                board: game.fen
             } as IStartGameConfirm);
         });
 
@@ -46,7 +46,7 @@ export class PlayerManager {
                 SocketManager.instance.send([game.whiteUser, game.blackUser], Events.JOIN_GAME_CONFIRM, {
                     gameId: game.id,
                     status: game.state,
-                    board: game.boardState
+                    board: game.fen
                 });
             });
         });
@@ -60,7 +60,7 @@ export class PlayerManager {
             );
             SocketManager.instance.send([game.whiteUser, game.blackUser], Events.BOARD_STATE_UPDATE, {
                 status: game.state,
-                board: game.boardState
+                board: game.fen
             } as IBoardStateUpdate,
                 game.id
             );
@@ -70,7 +70,7 @@ export class PlayerManager {
             const game = GameManager.instance.surrender(this.playerRoom[socket.id], socket.id);
             SocketManager.instance.send([game.whiteUser, game.blackUser], Events.BOARD_STATE_UPDATE, {
                 status: game.state,
-                board: game.boardState
+                board: game.fen
             } as IBoardStateUpdate,
                 game.id
             );
