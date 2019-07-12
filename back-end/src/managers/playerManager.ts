@@ -43,7 +43,7 @@ export class PlayerManager {
         socket.on(Events.JOIN_GAME, (data: IJoinGame) => {
             this.setGameForPlayer(socket.id, data.gameId);
             GameManager.instance.joinGame(socket.id, data.gameId, (game: ChessBoard) => {
-                SocketManager.instance.send([socket.id], Events.JOIN_GAME_CONFIRM, {
+                SocketManager.instance.send([game.whiteUser, game.blackUser], Events.JOIN_GAME_CONFIRM, {
                     gameId: game.id,
                     status: game.state,
                     board: game.boardState
@@ -61,12 +61,19 @@ export class PlayerManager {
             SocketManager.instance.send([game.whiteUser, game.blackUser], Events.BOARD_STATE_UPDATE, {
                 status: game.state,
                 board: game.boardState
-            } as IBoardStateUpdate);
+            } as IBoardStateUpdate,
+                game.id
+            );
         });
 
         socket.on(Events.SURRENDER_GAME, (data: ISurrenderGame) => {
-            GameManager.instance.surrender(this.playerRoom[socket.id], socket.id);
-            SocketManager.instance.send([socket.id], Events.SURRENDER_GAME_CONFIRM, {});
+            const game = GameManager.instance.surrender(this.playerRoom[socket.id], socket.id);
+            SocketManager.instance.send([game.whiteUser, game.blackUser], Events.BOARD_STATE_UPDATE, {
+                status: game.state,
+                board: game.boardState
+            } as IBoardStateUpdate,
+                game.id
+            );
         });
     }
 }

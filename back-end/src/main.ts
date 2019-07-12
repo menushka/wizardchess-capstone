@@ -28,7 +28,8 @@ io.on(Events.CONNECTION, (socket: SocketIO.Socket) => {
     } else if (clientType === Config.CLIENT_TYPE_PLAYER) {
         playerManager.addPlayer(socket);
     } else if (clientType === Config.CLIENT_TYPE_VIEWER) {
-        // TODO: Implement Viewer
+        const gameId = socket.handshake.query.gameId;
+        socketManager.addViewer(gameId, socket);
     } else {
         console.log("Unrecognized client type connection");
     }

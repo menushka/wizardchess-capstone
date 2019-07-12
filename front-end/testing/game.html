@@ -3,6 +3,18 @@
     <title>ChessDebug</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
     <script>
+        function genTable(board) {
+            let result = "<table>"
+            for (const row of board) {
+                result += "<tr>";
+                for (const item of row) {
+                    result += "<td height='30' width='30'>" + item + "</td>";
+                }
+                result += "</tr>";
+            }
+            return result + "</table>"
+        }
+
         const socket = io('http://localhost:8000', { query: { client:"frontend" } });
 
         function send(event, data) {
@@ -29,6 +41,10 @@
             });
         }
 
+        function surrender() {
+            send("surrenderGame", { gameId: document.getElementById("joinPVPGameID").value });
+        }
+
         socket.on("connectionConfirm",function(data) {
             console.log("connectionConfirm", data);
 		    document.getElementById("main").style.visibility = "visible";
@@ -38,28 +54,33 @@
             console.log("startGameConfirm", data);
             document.getElementById("gameGameID").innerHTML = data.gameId;
             document.getElementById("gameStatus").innerHTML = data.status;
-            document.getElementById("gameChessboard").innerHTML = data.board;
+            document.getElementById("gameChessboard").innerHTML = genTable(data.board);
         });
 
         socket.on("joinGameConfirm",function(data) {
             console.log("joinGameConfirm", data);
             document.getElementById("gameGameID").innerHTML = data.gameId;
             document.getElementById("gameStatus").innerHTML = data.status;
-            document.getElementById("gameChessboard").innerHTML = data.board;
+            document.getElementById("gameChessboard").innerHTML = genTable(data.board);
         });
 
         socket.on("boardStateUpdate",function(data) {
             console.log("boardStateUpdate", data);
             document.getElementById("gameStatus").innerHTML = data.status;
-            document.getElementById("gameChessboard").innerHTML = data.board;
-        });
-
-        socket.on("surrenderGameConfirm",function(data) {
-            console.log("surrenderGameConfirm", data);
-            document.getElementById("gameStatus").innerHTML = data.status;
-            document.getElementById("gameChessboard").innerHTML = data.board;
+            document.getElementById("gameChessboard").innerHTML = genTable(data.board);
         });
     </script>
+    <style>
+    td {
+        text-align: center;
+    }
+    tr:nth-child(even) td:nth-child(even), tr:nth-child(odd) td:nth-child(odd) {
+        background: #bbbbbb;
+    }
+    tr:nth-child(odd) td:nth-child(even), tr:nth-child(even) td:nth-child(odd) {
+        background: #fefefe;
+    }
+    </style>
 </head>
 <body>
     <div id="main" style="visibility: hidden;">
@@ -76,6 +97,7 @@
             Piece:<input id="gamePiece" type="text">
             Location:<input id="gameLocation" type="text">
             <br/>
+            <button onclick="surrender()">Surrender Game</button>
             <div id="gameChessboard"></div>
         </div>
     </div>

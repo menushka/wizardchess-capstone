@@ -1,7 +1,7 @@
 import { ChessBoard } from "../data/chessboard";
 import { Events } from "../events";
 import { IAlexaConnection, IAlexaJoin, IAlexaMovePiece, IAlexaStart, IAlexaSurrender } from "../interfaces/alexa";
-import { IStartGameConfirm } from "../interfaces/connection";
+import { IBoardStateUpdate, IStartGameConfirm } from "../interfaces/connection";
 import { GameManager } from "./gameManager";
 import { SocketManager } from "./socketManager";
 
@@ -60,22 +60,30 @@ export class AlexaManager {
             });
         });
 
-        socket.on(Events.CHESS_PIECE_MOVED, (data: IAlexaMovePiece) => {
-            GameManager.instance.moveChessPiece(
+        socket.on(Events.CHESS_PIECE_MOVED, async (data: IAlexaMovePiece) => {
+            const game = await GameManager.instance.moveChessPiece(
                 data.userId,
                 this.alexaRoom[data.userId],
                 data.chessPiece,
                 data.boardPosition
-            ).then((game) => {
-                SocketManager.instance.send([data.userId], Events.CHESS_PIECE_MOVED_CONFIRM, {
-                    board: game.boardState
-                });
+            );
+            SocketManager.instance.send([data.userId], Events.CHESS_PIECE_MOVED_CONFIRM, {
+                board: game.boardState
             });
+            SocketManager.instance.send([game.whiteUser, game.blackUser], Events.CHESS_PIECE_MOVED_CONFIRM, {
+                board: game.boardState
+            }, game.id);
         });
 
         socket.on(Events.SURRENDER_GAME, (data: IAlexaSurrender) => {
-            GameManager.instance.surrender(this.alexaRoom[data.userId], data.userId);
+            const game = GameManager.instance.surrender(this.alexaRoom[data.userId], data.userId);
             SocketManager.instance.send([data.userId], Events.SURRENDER_GAME_CONFIRM, {});
+            SocketManager.instance.send([game.whiteUser, game.blackUser], Events.BOARD_STATE_UPDATE, {
+                status: game.state,
+                board: game.boardState
+            } as IBoardStateUpdate,
+                game.id
+            );
         });
     }
 }
