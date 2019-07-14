@@ -42,8 +42,13 @@ io.on(Events.CONNECTION, (socket: SocketIO.Socket) => {
     }
 });
 
+expressServer.use("/img", express.static(path.join(__dirname, "../../front-end/chessboard/img")));
+expressServer.use("/css", express.static(path.join(__dirname, "../../front-end/chessboard/css")));
+expressServer.use("/js", express.static(path.join(__dirname, "../../front-end/chessboard/js")));
+expressServer.use("/PvCPU.js", express.static(path.join(__dirname, "../../front-end/chessboard/PvCPU.js")));
+
 expressServer.get("/game/", (request, response) => {
-    response.sendFile(path.join(__dirname, "../../front-end/testing/game.html"));
+    response.sendFile(path.join(__dirname, "../../front-end/chessboard/PvCPU.html"));
 });
 
 expressServer.get("/game/:id", (request, response) => {
