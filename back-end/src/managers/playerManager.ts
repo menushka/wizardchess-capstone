@@ -64,23 +64,13 @@ export class PlayerManager {
                 data.piece,
                 data.location
             );
-
             SocketManager.instance.send([game.whiteUser, game.blackUser], Events.BOARD_STATE_UPDATE, {
                 status: game.state,
                 board: game.fen,
                 chessHelper: game.chessHelper
             } as IBoardStateUpdate,
-            game.id
+                game.id
             );
-            /*
-            setTimeout(() => {
-                this.send(socketId, Events.CHESS_PIECE_MOVED_CONFIRM, {
-                    board: game.boardState,
-                    fen: game.fen,
-                    chessHelper: game.chessHelper
-                });
-            }, 1000 );
-            */
         });
 
         socket.on(Events.SURRENDER_GAME, (data: ISurrenderGame) => {

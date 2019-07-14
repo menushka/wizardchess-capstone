@@ -29,6 +29,7 @@ function onDragStart(source, piece, position, orientation) {
   // do not pick up pieces if the game is over
   if (game.game_over()) return false
 
+  // only allowed to move if its currently your turn
   if (currentColor.toLowerCase() !== game.turn()) {
     return false;
   }

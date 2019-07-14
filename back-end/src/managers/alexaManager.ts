@@ -76,9 +76,13 @@ export class AlexaManager {
             SocketManager.instance.send([data.userId], Events.CHESS_PIECE_MOVED_CONFIRM, {
                 board: game.fen
             });
-            SocketManager.instance.send([game.whiteUser, game.blackUser], Events.CHESS_PIECE_MOVED_CONFIRM, {
-                board: game.fen
-            }, game.id);
+            SocketManager.instance.send([game.whiteUser, game.blackUser], Events.BOARD_STATE_UPDATE, {
+                status: game.state,
+                board: game.fen,
+                chessHelper: game.chessHelper
+            } as IBoardStateUpdate,
+                game.id
+            );
         });
 
         socket.on(Events.SURRENDER_GAME, (data: IAlexaSurrender) => {
