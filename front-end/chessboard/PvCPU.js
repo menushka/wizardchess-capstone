@@ -1,4 +1,5 @@
 var board = null
+var currentColor
 var $board = $('#myBoard')
 var game = new Chess()
 var squareToHighlight = null
@@ -27,6 +28,10 @@ function removeHighlights(color) {
 function onDragStart(source, piece, position, orientation) {
   // do not pick up pieces if the game is over
   if (game.game_over()) return false
+
+  if (currentColor.toLowerCase() !== game.turn()) {
+    return false;
+  }
 
   // only pick up pieces for the side to move
   if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
@@ -144,16 +149,21 @@ function surrender() {
   });
 }
 
-var config = {
-  draggable: true,
-  position: 'start',
-  onDragStart: onDragStart,
-  onDrop: onDrop,
-  onMoveEnd: onMoveEnd,
-  onSnapEnd: onSnapEnd
+function getBoardConfig(color) {
+  console.log(color);
+  console.log(color ==='B' ? 'black' : 'white');
+  return {
+    draggable: true,
+    position: 'start',
+    onDragStart: onDragStart,
+    onDrop: onDrop,
+    onMoveEnd: onMoveEnd,
+    onSnapEnd: onSnapEnd,
+    orientation: color ==='B' ? 'black' : 'white'
+  }
 }
 
-board = Chessboard('board1', config);
+// board = Chessboard('board1', getBoardConfig('W'));
 
 socket.on("connectionConfirm", function (data) {
   console.log("connectionConfirm", data);
@@ -164,8 +174,11 @@ socket.on("startGameConfirm", function (data) {
   console.log("startGameConfirm", data);
   document.getElementById("gameGameID").innerHTML = data.gameId;
   document.getElementById("gameStatus").innerHTML = data.status;
+  document.getElementById("gameGameColor").innerHTML = data.color;
   document.getElementById("gameChessboard").innerHTML = data.board;
+  currentColor = data.color
 
+  board = Chessboard('board1', getBoardConfig(currentColor));
   game.load(data.board);
   board.position(data.board);
   // clear board ---- new Game
@@ -175,8 +188,11 @@ socket.on("joinGameConfirm", function (data) {
   console.log("joinGameConfirm", data);
   document.getElementById("gameGameID").innerHTML = data.gameId;
   document.getElementById("gameStatus").innerHTML = data.status;
+  document.getElementById("gameGameColor").innerHTML = data.color;
   document.getElementById("gameChessboard").innerHTML = data.board;
+  currentColor = data.color
 
+  board = Chessboard('board1', getBoardConfig(currentColor));
   game.load(data.board);
   board.position(data.board);
   // load board ---- running Game

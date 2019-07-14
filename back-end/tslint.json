@@ -12,7 +12,8 @@
         "no-empty": false,
         "object-literal-shorthand": false,
         "object-literal-sort-keys": false,
-        "max-line-length": false
+        "max-line-length": false,
+        "prefer-for-of": false
     },
     "rulesDirectory": []
 }

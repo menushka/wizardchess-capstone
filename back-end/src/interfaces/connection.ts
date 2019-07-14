@@ -11,6 +11,7 @@ export interface IStartGame {
 export interface IStartGameConfirm {
     gameId: string;
     status: string;
+    color: string;
     board: string;
 }
 
@@ -21,6 +22,7 @@ export interface IJoinGame {
 export interface IJoinGameConfirm {
     gameId: string;
     status: string;
+    color: string;
     board: string;
 }
 

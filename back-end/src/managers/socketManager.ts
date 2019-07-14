@@ -37,14 +37,16 @@ export class SocketManager {
         }
     }
 
-    public send(userIds: string[], eventName: string, data: any, gameId?: string) {
-        for (const userId of userIds) {
+    public send(userIds: string[], eventName: string, data: any | any[], gameId?: string) {
+        for (let i = 0; i < userIds.length; i++) {
+            const userId = userIds[i];
+            const message = Array.isArray(data) ? data[i] : data;
             if (userId in this.playerSockets) {
-                this.playerSockets[userId].emit(eventName, data);
+                this.playerSockets[userId].emit(eventName, message);
             } else {
-                data.userId = userId;
+                message.userId = userId;
                 if (this.alexaSocket) {
-                    this.alexaSocket.emit(eventName, data);
+                    this.alexaSocket.emit(eventName, message);
                 }
             }
         }

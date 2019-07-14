@@ -1,9 +1,10 @@
-import { BoardLocation, ChessPiece, GameType, IChessBoard } from "../interfaces/general";
+import { BoardLocation, ChessPiece, GameType, IChessBoard, ChessColor } from "../interfaces/general";
 import { AlexaManager } from "../managers/alexaManager";
 import { PlayerManager } from "../managers/playerManager";
 import { StockfishManager } from "../managers/stockfishManager";
 
 import * as chessjs from "chess.js";
+import { resolve } from "path";
 
 export class ChessBoard implements IChessBoard {
 
@@ -42,17 +43,19 @@ export class ChessBoard implements IChessBoard {
     }
 
     public movePiece(userId: string, piece: ChessPiece, location: any) {
+        if (this.state !== ChessBoardState.Playing || this.getCurrentUser() !== userId) { return Promise.resolve(this.fen); }
         return new Promise( async (resolve, reject) => {
-            // if (this.getCurrentUser() !== userId) { return; }
             this.Chess.move(location.from + location.to, {sloppy: true});
             this.fen = this.Chess.fen();
             switch (this.type) {
                 case GameType.AI: // PvAI
+                this.currentTurn += 1;
                 await this.stockfishMove(2, this.fen);
                 break;
                 case GameType.Player: // PvP
                 break;
             }
+            this.currentTurn += 1;
             resolve(this.fen);
         });
     }
@@ -95,6 +98,16 @@ export class ChessBoard implements IChessBoard {
         if (this.blackUser) {
             PlayerManager.instance.clearGame(this.blackUser);
             AlexaManager.instance.clearGame(this.blackUser);
+        }
+    }
+
+    public getUserColor(userId: string): ChessColor | "" {
+        if (userId === this.whiteUser) {
+            return ChessColor.WHITE;
+        } else if (userId === this.blackUser) {
+            return ChessColor.BLACK;
+        } else {
+            return "";
         }
     }
 

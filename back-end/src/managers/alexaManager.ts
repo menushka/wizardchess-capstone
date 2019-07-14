@@ -1,7 +1,7 @@
 import { ChessBoard } from "../data/chessboard";
 import { Events } from "../events";
 import { IAlexaConnection, IAlexaJoin, IAlexaMovePiece, IAlexaStart, IAlexaSurrender } from "../interfaces/alexa";
-import { IBoardStateUpdate, IStartGameConfirm } from "../interfaces/connection";
+import { IBoardStateUpdate, IJoinGameConfirm, IStartGameConfirm } from "../interfaces/connection";
 import { GameManager } from "./gameManager";
 import { SocketManager } from "./socketManager";
 
@@ -45,6 +45,7 @@ export class AlexaManager {
             SocketManager.instance.send([data.userId], Events.START_GAME_CONFIRM, {
                 gameId: game.id,
                 status: game.state,
+                color: game.getUserColor(data.userId),
                 board: game.fen
             } as IStartGameConfirm);
         });
@@ -52,11 +53,16 @@ export class AlexaManager {
         socket.on(Events.JOIN_GAME, (data: IAlexaJoin) => {
             GameManager.instance.joinGame(data.userId, data.gameId, (game: ChessBoard) => {
                 this.alexaRoom[data.userId] = game.id;
-                SocketManager.instance.send([data.userId], Events.JOIN_GAME_CONFIRM, {
-                    gameId: game.id,
-                    status: game.state,
-                    board: game.fen
+                const playerList = [game.whiteUser, game.blackUser];
+                const messageList = playerList.map((x) => {
+                    return {
+                        gameId: game.id,
+                        status: game.state,
+                        color: game.getUserColor(x),
+                        board: game.fen
+                    } as IJoinGameConfirm;
                 });
+                SocketManager.instance.send(playerList, Events.JOIN_GAME_CONFIRM, messageList);
             });
         });
 

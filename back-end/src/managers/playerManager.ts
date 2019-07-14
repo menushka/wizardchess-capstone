@@ -2,7 +2,7 @@ import io from "socket.io";
 
 import { ChessBoard } from "../data/chessboard";
 import { Events } from "../events";
-import { IBoardStateUpdate, IChessPieceMoved, IJoinGame, IStartGame, IStartGameConfirm, ISurrenderGame } from "../interfaces/connection";
+import { IBoardStateUpdate, IChessPieceMoved, IJoinGame, IStartGame, IStartGameConfirm, ISurrenderGame, IJoinGameConfirm } from "../interfaces/connection";
 import { GameManager } from "./gameManager";
 import { SocketManager } from "./socketManager";
 
@@ -36,18 +36,24 @@ export class PlayerManager {
             SocketManager.instance.send([socket.id], Events.START_GAME_CONFIRM, {
                 gameId: game.id,
                 status: game.state,
+                color: game.getUserColor(socket.id),
                 board: game.fen,
             } as IStartGameConfirm);
         });
 
         socket.on(Events.JOIN_GAME, (data: IJoinGame) => {
-            this.setGameForPlayer(socket.id, data.gameId);
             GameManager.instance.joinGame(socket.id, data.gameId, (game: ChessBoard) => {
-                SocketManager.instance.send([game.whiteUser, game.blackUser], Events.JOIN_GAME_CONFIRM, {
-                    gameId: game.id,
-                    status: game.state,
-                    board: game.fen
+                this.setGameForPlayer(socket.id, data.gameId);
+                const playerList = [game.whiteUser, game.blackUser];
+                const messageList = playerList.map((x) => {
+                    return {
+                        gameId: game.id,
+                        status: game.state,
+                        color: game.getUserColor(x),
+                        board: game.fen
+                    } as IJoinGameConfirm;
                 });
+                SocketManager.instance.send(playerList, Events.JOIN_GAME_CONFIRM, messageList);
             });
         });
 
