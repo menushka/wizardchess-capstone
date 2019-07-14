@@ -32,6 +32,7 @@ function postFen({
 } = {}) {
     engine.postMessage(`position fen ${fen}`)
     engine.postMessage(`go depth ${depth}`)
+    engine.postMessage(`go searchmoves`)
 }
 
 function printGameState(){
@@ -84,9 +85,9 @@ var gameStart = setInterval(() => {
     } else {
         console.log(`---- End ----`);
         chess.game_over();
-        printGameState();
+        // printGameState();
         clearInterval(gameStart);
     }
-}, 50);
+}, 1);
 
 

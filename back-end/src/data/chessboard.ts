@@ -30,6 +30,10 @@ export class ChessBoard implements IChessBoard {
         if (this.type === GameType.AI) {
             this.assignRemainder("AI");
         }
+
+        console.log("Game Start (" , this.id, ") --- UserID:" , userId);
+
+        console.log(`Game Start (${this.id}) (${this.whiteUser}) (${this.blackUser})`);
     }
 
     public join(userId: string): boolean {
@@ -38,42 +42,34 @@ export class ChessBoard implements IChessBoard {
     }
 
     public movePiece(userId: string, piece: ChessPiece, location: any) {
-        if (this.getCurrentUser() !== userId) { return; }
-
-        const move = this.Chess.move(location.from + location.to, {sloppy: true});
-        this.fen = this.Chess.fen();
-
-        // temp code until socket update
-
-        // switch (this.type) {
-        //     case 1: // PvAI
-        //         this.stockfishMove(2, this.fen)
-        //         break;
-        //     case 2: // PvP
-
-        //         break;
-        // }
-
-        this.stockfishMovePromise(2, this.fen).then((fen: string) => {
-            this.moveHelper(5, fen);
-        }).catch((reject) => {
-            console.log(reject);
+        return new Promise( async (resolve, reject) => {
+            // if (this.getCurrentUser() !== userId) { return; }
+            this.Chess.move(location.from + location.to, {sloppy: true});
+            this.fen = this.Chess.fen();
+            switch (this.type) {
+                case GameType.AI: // PvAI
+                await this.stockfishMove(2, this.fen);
+                break;
+                case GameType.Player: // PvP
+                break;
+            }
+            resolve(this.fen);
         });
     }
 
-    public stockfishMovePromise(depth: number, fen: string) {
+    public stockfishMove(depth: number, fen: string) {
         return new Promise((resolve, reject) => {
             StockfishManager.instance.postFen(depth, fen);
             setTimeout(() => {
                 const move = this.Chess.move(StockfishManager.instance.bestmoves.slice(-1)[0], { sloppy: true });
-                console.log(this.Chess.ascii());
-                this.fen = this.Chess.fen();
+                // console.log(this.Chess.ascii());
                 if (move == null) {
                     if (this.Chess.game_over() === true) {
                         reject("Game Over");
                     }
                     reject("Invalid Move (Parse Failed on Move)");
                 } else {
+                    this.fen = this.Chess.fen();
                     resolve(this.fen);
                 }
             }, 50);
@@ -127,7 +123,8 @@ export class ChessBoard implements IChessBoard {
     }
 
     private setDefaultBoardState() {
-        this.fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        this.Chess.reset();
+        this.fen = this.Chess.fen();
     }
 }
 

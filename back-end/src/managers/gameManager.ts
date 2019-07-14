@@ -1,5 +1,6 @@
 import { ChessBoard } from "../data/chessboard";
 import { BoardLocation, ChessPiece, GameType } from "../interfaces/general";
+import { SocketManager } from "./socketManager";
 
 export class GameManager {
 
@@ -30,6 +31,7 @@ export class GameManager {
 
 // tslint:disable-next-line: max-line-length
     public async moveChessPiece(userId: string, gameId: string, chessPiece: ChessPiece, boardLocation: any) {
+        console.log(boardLocation);
         await this.games[gameId].movePiece(userId, chessPiece, boardLocation);
         return this.games[gameId];
     }

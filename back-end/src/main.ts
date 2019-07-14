@@ -21,7 +21,14 @@ const expressServer = express();
 const httpServer = http.createServer(expressServer);
 const io = socketIO(httpServer);
 
+// const wildcard = require("socketio-wildcard");
+// io.use(wildcard());
+
 io.on(Events.CONNECTION, (socket: SocketIO.Socket) => {
+    // socket.on("*", (data) => {
+    //     console.log(data);
+    // });
+
     const clientType = socket.handshake.query.client;
     if (clientType === Config.CLIENT_TYPE_ALEXA) {
         alexaManager.setSocket(socket);

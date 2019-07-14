@@ -20,7 +20,7 @@ export class StockfishManager {
             this.isUpdating = true;
             const analysis = this.fenAnalysis(event);
             if (analysis) {
-                console.log(analysis);
+                // console.log(analysis);
                 this.bestmoves.push(analysis.bestmove.raw);
                 this.ponders.push(analysis.ponder.raw);
             }

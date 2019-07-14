@@ -18,6 +18,7 @@
     "chess.js": "^0.10.2",
     "express": "^4.16.4",
     "socket.io": "^2.2.0",
+    "socketio-wildcard": "^2.0.0",
     "stockfish": "^10.0.0"
   },
   "devDependencies": {

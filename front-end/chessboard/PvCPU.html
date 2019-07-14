@@ -11,11 +11,33 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"
     integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz" crossorigin="anonymous">
   </script>
+
 </head>
 
 <body>
-  <div id="board1" style="width: 400px"></div>
-  <script src="./PvCPU.js"></script>
+    <div id="main" style="visibility: hidden;">
+        <div>
+            <button onclick="startPVAI()">Start PVAI Game</button><br/>
+            <button onclick="startPVP()">Start PVP Game</button><br/>
+            <button onclick="joinPVP()">Join PVP Game</button>
+            <input id="joinPVPGameID" type="text">
+        </div>
+        <div>
+            Game Status:<span id="gameStatus"></span><br/>
+            Game ID:<span id="gameGameID"></span><br/>
+            <button onclick="moveChessPiece()">Move Chess Piece</button>
+            Piece:<input id="gameMovePiece" type="text">
+            From:<input id="gameMoveFrom" type="text">
+            To:<input id="gameMoveTo" type="text">
+            <br/>
+            <button onclick="surrender()">Surrender Game</button>
+            <div id="gameChessboard"></div>
+        </div>
+      <div id="board1" style="width: 400px"></div>
+      <script src="./PvCPU.js"></script>
+    </div>
+
+    
 </body>
 
 </html>
