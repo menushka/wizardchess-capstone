@@ -115,7 +115,6 @@ export class ChessBoard implements IChessBoard {
             if (this.whiteUser === "AI") {
                 this.movePiece(this.whiteUser, null, null).then((res) => {
                     this.currentTurn -= 1;
-                    console.log(this.Chess.ascii());
                     resolve();
                 });
             } else {
