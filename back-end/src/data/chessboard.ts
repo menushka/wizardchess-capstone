@@ -23,6 +23,7 @@ export class ChessBoard implements IChessBoard {
     constructor(userId: string, type: GameType, gameId: string) {
         this.id = gameId;
         this.type = type;
+        this.difficulty = 1;
         this.currentTurn = 0;
         this.Chess = new chessjs.Chess();
 
@@ -30,9 +31,6 @@ export class ChessBoard implements IChessBoard {
 
         this.state = ChessBoardState.Waiting;
         this.randomAssignWhiteOrBlack(userId);
-        this.checkAiFirstMove(this.type);
-
-        // console.log(`Game Start (${this.id}) (${this.whiteUser}) (${this.blackUser})`);
     }
 
     public join(userId: string): boolean {
@@ -110,6 +108,22 @@ export class ChessBoard implements IChessBoard {
         }
     }
 
+    // First turn AI Movement
+    public checkAiFirstMove(type: GameType) {
+        return new Promise((resolve, reject) => {
+            this.assignRemainder("AI");
+            if (this.whiteUser === "AI") {
+                this.movePiece(this.whiteUser, null, null).then((res) => {
+                    this.currentTurn -= 1;
+                    console.log(this.Chess.ascii());
+                    resolve();
+                });
+            } else {
+                reject("AI is not White");
+            }
+        });
+    }
+
     private randomAssignWhiteOrBlack(userId: string) {
         if (Math.random() > 0.5) {
             this.whiteUser = userId;
@@ -137,19 +151,6 @@ export class ChessBoard implements IChessBoard {
     private setDefaultBoardState() {
         this.Chess.reset();
         this.fen = this.Chess.fen();
-    }
-
-    private checkAiFirstMove(type: GameType) {
-        return new Promise((resolve, reject) => {
-            this.assignRemainder("AI");
-            if (this.whiteUser === "AI") {
-                this.movePiece(this.whiteUser, null, null).then((res) => {
-                    this.currentTurn -= 1;
-                    // console.log(this.Chess.ascii());
-                    resolve();
-                });
-            } // First turn AI Movement
-        });
     }
 
 }

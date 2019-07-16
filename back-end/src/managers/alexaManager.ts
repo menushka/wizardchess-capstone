@@ -39,8 +39,8 @@ export class AlexaManager {
             SocketManager.instance.send([data.userId], Events.ALEXA_CONNECTION_CONFIRM, {});
         });
 
-        socket.on(Events.START_GAME, (data: IAlexaStart) => {
-            const game = GameManager.instance.startGame(data.userId, data.type);
+        socket.on(Events.START_GAME, async  (data: IAlexaStart) => {
+            const game = await GameManager.instance.startGame(data.userId, data.type);
             this.setGameForPlayer(data.userId, game.id);
             SocketManager.instance.send([data.userId], Events.START_GAME_CONFIRM, {
                 gameId: game.id,

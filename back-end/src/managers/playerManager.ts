@@ -30,8 +30,8 @@ export class PlayerManager {
 
     private attachSocketListeners(socket: SocketIO.Socket) {
         SocketManager.instance.send([socket.id], Events.CONNECTION_CONFIRM, {});
-        socket.on(Events.START_GAME, (data: IStartGame) => {
-            const game = GameManager.instance.startGame(socket.id, data.type);
+        socket.on(Events.START_GAME, async (data: IStartGame) => {
+            const game = await GameManager.instance.startGame(socket.id, data.type);
             this.setGameForPlayer(socket.id, game.id);
             SocketManager.instance.send([socket.id], Events.START_GAME_CONFIRM, {
                 gameId: game.id,

@@ -16,9 +16,8 @@ export class GameManager {
         return this.games[gameId];
     }
 
-    public startGame(userId: string, type: GameType) {
-        let x = this.createNewGame(userId, type);
-        return x;
+    public async startGame(userId: string, type: GameType) {
+        return await this.createNewGame(userId, type);
     }
 
     public joinGame(userId: string, gameId: string, cb: (game: ChessBoard) => void) {
@@ -30,7 +29,6 @@ export class GameManager {
         }
     }
 
-// tslint:disable-next-line: max-line-length
     public async moveChessPiece(userId: string, gameId: string, chessPiece: ChessPiece, boardLocation: any) {
         await this.games[gameId].movePiece(userId, chessPiece, boardLocation);
         return this.games[gameId];
@@ -41,12 +39,22 @@ export class GameManager {
         return this.games[gameId];
     }
 
-    private createNewGame(userId: string, type: GameType): ChessBoard {
-        const code = this.generateGameID();
-        const board = new ChessBoard(userId, type, code);
-        // console.log(board.Chess.ascii());
-        this.games[code] = board;
-        return board;
+    private async createNewGame(userId: string, type: GameType): Promise<ChessBoard> {
+            const code = this.generateGameID();
+            const board = await this.createChessBoard(userId, type, code);
+            this.games[code] = board;
+            return board;
+    }
+
+    private createChessBoard(userId: string, type: number, code: string): Promise<ChessBoard> {
+        return new Promise( async (resolve, reject) => {
+            const board = new ChessBoard(userId, type, code);
+            board.checkAiFirstMove(type).then((result) => {
+                resolve(board);
+            }).catch((err) => {
+                resolve(board);
+            });
+        });
     }
 
     private generateGameID(): string {
