@@ -48,6 +48,13 @@ export class AlexaManager {
                 color: game.getUserColor(data.userId),
                 board: game.fen
             } as IStartGameConfirm);
+            SocketManager.instance.send([game.whiteUser, game.blackUser], Events.BOARD_STATE_UPDATE, {
+                status: game.state,
+                board: game.fen,
+                chessHelper: game.chessHelper,
+            } as IBoardStateUpdate,
+                game.id
+            );
         });
 
         socket.on(Events.JOIN_GAME, (data: IAlexaJoin) => {
@@ -70,16 +77,19 @@ export class AlexaManager {
             const game = await GameManager.instance.moveChessPiece(
                 data.userId,
                 this.alexaRoom[data.userId],
-                data.chessPiece,
-                data.boardPosition
+                data.piece,
+                data.location
             );
-            SocketManager.instance.send([data.userId], Events.CHESS_PIECE_MOVED_CONFIRM, {
-                board: game.fen
-            });
+            const chessPieceMoved: any = {
+                board: game.fen,
+                move: game.move
+            };
+            if (game.move === null) { Object.assign(chessPieceMoved, {error: "Invalid Move"}); }
+            SocketManager.instance.send([data.userId], Events.CHESS_PIECE_MOVED_CONFIRM, chessPieceMoved);
             SocketManager.instance.send([game.whiteUser, game.blackUser], Events.BOARD_STATE_UPDATE, {
                 status: game.state,
                 board: game.fen,
-                chessHelper: game.chessHelper
+                chessHelper: game.chessHelper,
             } as IBoardStateUpdate,
                 game.id
             );

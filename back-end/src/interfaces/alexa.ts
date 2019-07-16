@@ -16,8 +16,11 @@ export interface IAlexaJoin {
 
 export interface IAlexaMovePiece {
     userId: string;
-    chessPiece: ChessPiece;
-    boardPosition: BoardLocation;
+    piece: ChessPiece;
+    location: {
+        from: BoardLocation;
+        to: BoardLocation;
+    };
 }
 
 export interface IAlexaSurrender {

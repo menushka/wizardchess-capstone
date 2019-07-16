@@ -7,7 +7,7 @@ const io = require('socket.io-client');
 const ALEXA_CONNECTION = "alexaConnection";
 const START_GAME = "startGame";
 const JOIN_GAME = "joinGame";
-const CHESS_PIECE_MOVED = "chessPieceMoved";
+const CHESS_PIECE_MOVED = "chessPieceMove";
 const SURRENDER_GAME = "surrenderGame";
 
 const RESPONSE_TIMEOUT = 1000;
@@ -22,10 +22,12 @@ class SocketManager {
       data.userId = userId;
       const onConfirm = (response) => {
         this.socket.off(eventName + "Confirm", onConfirm);
+        if ('error' in response) {
+          reject(response);
+        }
         resolve(response);
       };
       this.socket.on(eventName + "Confirm", onConfirm);
-
       this.socket.emit(eventName, data);
       setTimeout(reject, RESPONSE_TIMEOUT);
     });
@@ -128,13 +130,16 @@ const MovePieceIntentHandler = {
   async handle(handlerInput) {
     const userId = handlerInput.requestEnvelope.session.user.userId;
     const slots = handlerInput.requestEnvelope.request.intent.slots;
-    const chessPiece = slots["CHESS_PIECE"].value;
-    const boardPosition = slots["BOARD_POSITION"].value;
+    const boardPositionFrom = slots["BOARD_POSITION_FROM"].value;
+    const boardPositionTo = slots["BOARD_POSITION_TO"].value;
 
     let speechText = '';
     await socketManager.emit(userId, CHESS_PIECE_MOVED, {
-      chessPiece: chessPiece,
-      boardPosition: boardPosition
+      piece: null,
+      location: {
+        from: boardPositionFrom,
+        to: boardPositionTo
+      }
     })
     .then(() => {
       speechText = 'Piece moved!';

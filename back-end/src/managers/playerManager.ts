@@ -2,7 +2,7 @@ import io from "socket.io";
 
 import { ChessBoard } from "../data/chessboard";
 import { Events } from "../events";
-import { IBoardStateUpdate, IChessPieceMoved, IJoinGame, IStartGame, IStartGameConfirm, ISurrenderGame, IJoinGameConfirm } from "../interfaces/connection";
+import { IBoardStateUpdate, IChessPieceMoved, IJoinGame, IJoinGameConfirm, IStartGame, IStartGameConfirm, ISurrenderGame } from "../interfaces/connection";
 import { GameManager } from "./gameManager";
 import { SocketManager } from "./socketManager";
 
@@ -39,6 +39,13 @@ export class PlayerManager {
                 color: game.getUserColor(socket.id),
                 board: game.fen,
             } as IStartGameConfirm);
+            SocketManager.instance.send([game.whiteUser, game.blackUser], Events.BOARD_STATE_UPDATE, {
+                status: game.state,
+                board: game.fen,
+                chessHelper: game.chessHelper,
+            } as IBoardStateUpdate,
+                game.id
+            );
         });
 
         socket.on(Events.JOIN_GAME, (data: IJoinGame) => {
@@ -67,7 +74,7 @@ export class PlayerManager {
             SocketManager.instance.send([game.whiteUser, game.blackUser], Events.BOARD_STATE_UPDATE, {
                 status: game.state,
                 board: game.fen,
-                chessHelper: game.chessHelper
+                chessHelper: game.chessHelper,
             } as IBoardStateUpdate,
                 game.id
             );

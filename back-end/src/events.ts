@@ -13,7 +13,7 @@ export class Events {
     public static ALEXA_CONNECTION_CONFIRM: string = "alexaConnectionConfirm";
     public static START_GAME_CONFIRM: string = "startGameConfirm";
     public static JOIN_GAME_CONFIRM: string = "joinGameConfirm";
-    public static CHESS_PIECE_MOVED_CONFIRM: string = "chessPieceMovedConfirm";
+    public static CHESS_PIECE_MOVED_CONFIRM: string = "chessPieceMoveConfirm";
     public static SURRENDER_GAME_CONFIRM: string = "surrenderGameConfirm";
     public static BOARD_STATE_UPDATE: string = "boardStateUpdate";
 }

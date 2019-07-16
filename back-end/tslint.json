@@ -13,10 +13,8 @@
         "object-literal-shorthand": false,
         "object-literal-sort-keys": false,
         "max-line-length": false,
-        "prefer-for-of": false
+        "prefer-for-of": false,
+        "no-var-requires": false
     },
     "rulesDirectory": []
 }
-
-
-// tslint:disable-next-line: max-line-length

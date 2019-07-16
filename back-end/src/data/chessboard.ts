@@ -1,4 +1,4 @@
-import { BoardLocation, ChessPiece, GameType, IChessBoard, ChessColor } from "../interfaces/general";
+import { BoardLocation, ChessColor, ChessPiece, GameType, IChessBoard } from "../interfaces/general";
 import { AlexaManager } from "../managers/alexaManager";
 import { PlayerManager } from "../managers/playerManager";
 import { StockfishManager } from "../managers/stockfishManager";
@@ -17,6 +17,8 @@ export class ChessBoard implements IChessBoard {
     public Chess: any;
     public chessHelper: any;
     public fen: string;
+    public move: any;
+    public difficulty: number;
 
     constructor(userId: string, type: GameType, gameId: string) {
         this.id = gameId;
@@ -28,13 +30,9 @@ export class ChessBoard implements IChessBoard {
 
         this.state = ChessBoardState.Waiting;
         this.randomAssignWhiteOrBlack(userId);
-        if (this.type === GameType.AI) {
-            this.assignRemainder("AI");
-        }
+        this.checkAiFirstMove(this.type);
 
-        console.log("Game Start (" , this.id, ") --- UserID:" , userId);
-
-        console.log(`Game Start (${this.id}) (${this.whiteUser}) (${this.blackUser})`);
+        // console.log(`Game Start (${this.id}) (${this.whiteUser}) (${this.blackUser})`);
     }
 
     public join(userId: string): boolean {
@@ -43,14 +41,16 @@ export class ChessBoard implements IChessBoard {
     }
 
     public movePiece(userId: string, piece: ChessPiece, location: any) {
-        if (this.state !== ChessBoardState.Playing || this.getCurrentUser() !== userId) { return Promise.resolve(this.fen); }
+        if (this.state !== ChessBoardState.Playing || this.getCurrentUser() !== userId) { return Promise.reject(this.fen); }
         return new Promise( async (resolve, reject) => {
-            this.Chess.move(location.from + location.to, {sloppy: true});
-            this.fen = this.Chess.fen();
+            if (userId !== "AI") {
+                this.move = this.Chess.move(location.from + location.to, {sloppy: true});
+                this.fen = this.Chess.fen();
+            }
             switch (this.type) {
                 case GameType.AI: // PvAI
                 this.currentTurn += 1;
-                await this.stockfishMove(2, this.fen);
+                await this.stockfishMove(this.difficulty, this.fen);
                 break;
                 case GameType.Player: // PvP
                 break;
@@ -65,7 +65,6 @@ export class ChessBoard implements IChessBoard {
             StockfishManager.instance.postFen(depth, fen);
             setTimeout(() => {
                 const move = this.Chess.move(StockfishManager.instance.bestmoves.slice(-1)[0], { sloppy: true });
-                // console.log(this.Chess.ascii());
                 if (move == null) {
                     if (this.Chess.game_over() === true) {
                         reject("Game Over");
@@ -132,13 +131,27 @@ export class ChessBoard implements IChessBoard {
     }
 
     private getCurrentUser() {
-        return this.currentTurn % 2 === 0 ? this.whiteUser : this.blackUser;
+        return this.Chess.turn() === "w" ? this.whiteUser : this.blackUser;
     }
 
     private setDefaultBoardState() {
         this.Chess.reset();
         this.fen = this.Chess.fen();
     }
+
+    private checkAiFirstMove(type: GameType) {
+        return new Promise((resolve, reject) => {
+            this.assignRemainder("AI");
+            if (this.whiteUser === "AI") {
+                this.movePiece(this.whiteUser, null, null).then((res) => {
+                    this.currentTurn -= 1;
+                    // console.log(this.Chess.ascii());
+                    resolve();
+                });
+            } // First turn AI Movement
+        });
+    }
+
 }
 
 enum ChessBoardState {

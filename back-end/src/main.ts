@@ -21,8 +21,8 @@ const expressServer = express();
 const httpServer = http.createServer(expressServer);
 const io = socketIO(httpServer);
 
-// const wildcard = require("socketio-wildcard");
-// io.use(wildcard());
+const wildcard = require("socketio-wildcard");
+io.use(wildcard());
 
 io.on(Events.CONNECTION, (socket: SocketIO.Socket) => {
     // socket.on("*", (data) => {
