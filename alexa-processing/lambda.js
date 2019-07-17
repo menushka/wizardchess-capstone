@@ -1,6 +1,9 @@
 /* eslint-disable  func-names */
 /* eslint-disable  no-console */
 
+const Config = require('../back-end/dist/config');
+const os = require("os");
+
 const Alexa = require('ask-sdk-core');
 const io = require('socket.io-client');
 
@@ -14,7 +17,7 @@ const RESPONSE_TIMEOUT = 1000;
 
 class SocketManager {
   constructor() {
-    this.socket = io('http://localhost:8000', { query: { client:"alexa" } });
+    this.socket = io('http://' + os.hostname() + ':' + Config.Config.PORT, { query: { client:"alexa" } });
   }
 
   emit(userId, eventName, data) {

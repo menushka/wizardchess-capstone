@@ -1,0 +1,28 @@
+<html>
+<head>
+    <title>ChessDebug</title>
+    <link rel="stylesheet" href="./css/chessboard-1.0.0.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="./js/chessboard-1.0.0.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"
+    integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz" crossorigin="anonymous">
+  </script>
+</head>
+<body>
+    <div id="chessboardFen"></div>
+    <div id="board1" style="width: 400px"></div>
+    <script>
+        const socket = io('http://' + location.host, { query: {
+            client:"viewer",
+            gameId: location.href.substring(location.href.lastIndexOf('/') + 1)
+        } });
+        var board = Chessboard('board1', 'start');
+        socket.on("boardStateUpdate",function(data) {
+		    document.getElementById('chessboardFen').innerHTML = data.board;
+            board.position(data.board);
+		});
+    </script>
+</body>
+</html>

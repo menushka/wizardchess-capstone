@@ -46,16 +46,19 @@ expressServer.use("/img", express.static(path.join(__dirname, "../../front-end/c
 expressServer.use("/css", express.static(path.join(__dirname, "../../front-end/chessboard/css")));
 expressServer.use("/js", express.static(path.join(__dirname, "../../front-end/chessboard/js")));
 expressServer.use("/PvCPU.js", express.static(path.join(__dirname, "../../front-end/chessboard/PvCPU.js")));
+expressServer.use("/game/img", express.static(path.join(__dirname, "../../front-end/chessboard/img")));
+expressServer.use("/game/css", express.static(path.join(__dirname, "../../front-end/chessboard/css")));
+expressServer.use("/game/js", express.static(path.join(__dirname, "../../front-end/chessboard/js")));
 
 expressServer.get("/game/", (request, response) => {
-    response.sendFile(path.join(__dirname, "../../front-end/chessboard/PvCPU.html"));
+    response.sendFile(path.join(__dirname, "../../front-end/chessboard/game.html"));
 });
 
 expressServer.get("/game/:id", (request, response) => {
     const id = request.params.id;
     const game = GameManager.instance.getGame(id);
     if (game) {
-        response.sendFile(path.join(__dirname, "../../front-end/testing/viewer.html"));
+        response.sendFile(path.join(__dirname, "../../front-end/chessboard/viewer.html"));
     } else {
         response.send("No game found for " + id);
     }
