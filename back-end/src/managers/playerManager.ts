@@ -21,7 +21,7 @@ export class PlayerManager {
     }
 
     public clearGame(userId: string) {
-        const currentRoom = this.playerRoom[userId];
+        this.playerRoom[userId] = null;
     }
 
     private setGameForPlayer(socketId: string, gameId: string) {
