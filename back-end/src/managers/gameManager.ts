@@ -49,14 +49,16 @@ export class GameManager {
     private createChessBoard(userId: string, type: number, code: string): Promise<ChessBoard> {
         return new Promise( async (resolve, reject) => {
             const board = new ChessBoard(userId, type, code);
-            if (board.type === GameType.AI){
+            if (board.type === GameType.AI) {
+                // console.log(board.type);
                 board.checkAiFirstMove(type).then((result) => {
                     resolve(board);
                 }).catch((err) => {
                     resolve(board);
                 });
+            } else {
+                resolve(board);
             }
-            resolve(board);
         });
     }
 
