@@ -1,4 +1,5 @@
 var board = null
+var currentState
 var currentColor
 var $board = $('#myBoard')
 var game = new Chess()
@@ -28,6 +29,8 @@ function removeHighlights(color) {
 function onDragStart(source, piece, position, orientation) {
   // do not pick up pieces if the game is over
   if (game.game_over()) return false
+
+  if (currentState !== "Playing") return false
 
   // only allowed to move if its currently your turn
   if (currentColor.toLowerCase() !== game.turn()) {
@@ -177,6 +180,7 @@ socket.on("startGameConfirm", function (data) {
   document.getElementById("gameStatus").innerHTML = data.status;
   document.getElementById("gameGameColor").innerHTML = data.color;
   document.getElementById("gameChessboard").innerHTML = data.board;
+  currentState = data.status;
   currentColor = data.color
 
   board = Chessboard('board1', getBoardConfig(currentColor));
@@ -191,7 +195,8 @@ socket.on("joinGameConfirm", function (data) {
   document.getElementById("gameStatus").innerHTML = data.status;
   document.getElementById("gameGameColor").innerHTML = data.color;
   document.getElementById("gameChessboard").innerHTML = data.board;
-  currentColor = data.color
+  currentState = data.status;
+  currentColor = data.color;
 
   board = Chessboard('board1', getBoardConfig(currentColor));
   game.load(data.board);
@@ -203,6 +208,7 @@ socket.on("boardStateUpdate", function (data) {
   console.log("boardStateUpdate", data);
   document.getElementById("gameStatus").innerHTML = data.status;
   document.getElementById("gameChessboard").innerHTML = data.board;
+  currentState = data.status;
   
   game.load(data.board);
   board.position(data.board);
