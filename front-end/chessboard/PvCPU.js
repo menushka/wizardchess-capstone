@@ -119,19 +119,32 @@ function send(event, data) {
   socket.emit(event, data);
 }
 
+function toggleScreen(screen) {
+  if (screen === 0) {
+    $('#menuScreen').addClass('hidden');
+    $('#gameScreen').removeClass('hidden');
+  } else {
+    $('#menuScreen').removeClass('hidden');
+    $('#gameScreen').addClass('hidden');
+  }
+}
+
 function startPVAI() {
+  toggleScreen(0);
   send("startGame", {
     type: 0
   });
 }
 
 function startPVP() {
+  toggleScreen(0);
   send("startGame", {
     type: 1
   });
 }
 
 function joinPVP() {
+  toggleScreen(0);
   send("joinGame", {
     gameId: document.getElementById("joinPVPGameID").value
   });
@@ -178,8 +191,6 @@ socket.on("startGameConfirm", function (data) {
   console.log("startGameConfirm", data);
   document.getElementById("gameGameID").innerHTML = data.gameId;
   document.getElementById("gameStatus").innerHTML = data.status;
-  document.getElementById("gameGameColor").innerHTML = data.color;
-  document.getElementById("gameChessboard").innerHTML = data.board;
   currentState = data.status;
   currentColor = data.color
 
@@ -193,8 +204,6 @@ socket.on("joinGameConfirm", function (data) {
   console.log("joinGameConfirm", data);
   document.getElementById("gameGameID").innerHTML = data.gameId;
   document.getElementById("gameStatus").innerHTML = data.status;
-  document.getElementById("gameGameColor").innerHTML = data.color;
-  document.getElementById("gameChessboard").innerHTML = data.board;
   currentState = data.status;
   currentColor = data.color;
 
@@ -207,7 +216,6 @@ socket.on("joinGameConfirm", function (data) {
 socket.on("boardStateUpdate", function (data) {
   console.log("boardStateUpdate", data);
   document.getElementById("gameStatus").innerHTML = data.status;
-  document.getElementById("gameChessboard").innerHTML = data.board;
   currentState = data.status;
   
   game.load(data.board);
