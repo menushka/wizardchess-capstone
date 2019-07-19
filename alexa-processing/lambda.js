@@ -49,10 +49,10 @@ const LaunchRequestHandler = {
     let speechText = '';
     await socketManager.emit(userId, ALEXA_CONNECTION, {})
     .then(() => {
-      speechText = 'Welcome to Wizard Chess!';
+      speechText = appendBreak('Welcome to Wizard Chess!');
     })
     .catch(() => {
-      speechText = 'Error connecting.';
+      speechText = appendBreak('Error connecting.');
     });
 
     return handlerInput.responseBuilder
@@ -79,10 +79,10 @@ const StartGameIntentHandler = {
       type: type
     })
     .then((data) => {
-      speechText = 'Game started! Your game code is <say-as interpret-as="digits">' + data.gameId + "</say-as>.";
+      speechText = appendBreak('Game started! Your game code is <say-as interpret-as="digits">' + data.gameId + "</say-as>.");
     })
     .catch(() => {
-      speechText = 'Error starting game.';
+      speechText = appendBreak('Error starting game.');
     });
 
     return handlerInput.responseBuilder
@@ -109,10 +109,10 @@ const JoinGameIntentHandler = {
       gameId: gameId
     })
     .then(() => {
-      speechText = 'Connected!';
+      speechText = appendBreak('Connected!');
     })
     .catch(() => {
-      speechText = 'Error joining game.';
+      speechText = appendBreak('Error joining game.');
     });
 
     
@@ -145,10 +145,10 @@ const MovePieceIntentHandler = {
       }
     })
     .then(() => {
-      speechText = 'Piece moved!';
+      speechText = appendBreak('Piece moved!');
     })
     .catch(() => {
-      speechText = 'Error moving piece.';
+      speechText = appendBreak('Error moving piece.');
     });
 
     return handlerInput.responseBuilder
@@ -171,10 +171,10 @@ const SurrenderIntentHandler = {
     let speechText = '';
     await socketManager.emit(userId, SURRENDER_GAME, {})
     .then(() => {
-      speechText = 'Game surrendered.';
+      speechText = appendBreak('Game surrendered.');
     })
     .catch(() => {
-      speechText = 'Error surrendering.';
+      speechText = appendBreak('Error surrendering.');
     });
 
     return handlerInput.responseBuilder
@@ -191,7 +191,7 @@ const FallbackIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.FallbackIntent';
   },
   handle(handlerInput) {
-    const speechText = 'Unrecognized command.';
+    const speechText = appendBreak('Unrecognized command.');
 
     return handlerInput.responseBuilder
       .speak(speechText)
@@ -256,6 +256,11 @@ const ErrorHandler = {
       .getResponse();
   },
 };
+
+function appendBreak(str) {
+  return str + '<break time="10s"/><break time="10s"/><break time="10s"/><break time="10s"/><break time="10s"/><break time="10s"/>'
+};
+
 
 const skillBuilder = Alexa.SkillBuilders.custom();
 

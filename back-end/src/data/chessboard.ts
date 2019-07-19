@@ -22,11 +22,11 @@ export class ChessBoard implements IChessBoard {
 
     constructor(userId: string, type: GameType, gameId: string) {
         this.id = gameId;
-        this.type = type;
         this.difficulty = 1;
         this.currentTurn = 0;
         this.Chess = new chessjs.Chess();
 
+        this.checkType(type);
         this.setDefaultBoardState();
 
         this.state = ChessBoardState.Waiting;
@@ -39,6 +39,9 @@ export class ChessBoard implements IChessBoard {
     }
 
     public movePiece(userId: string, piece: ChessPiece, location: any) {
+        // console.log(this.state);
+        // console.log("White: " + this.whiteUser);
+        // console.log("Black: " + this.blackUser);
         if (this.state !== ChessBoardState.Playing || this.getCurrentUser() !== userId) { return Promise.reject(this.fen); }
         return new Promise( async (resolve, reject) => {
             if (userId !== "AI") {
@@ -150,6 +153,23 @@ export class ChessBoard implements IChessBoard {
     private setDefaultBoardState() {
         this.Chess.reset();
         this.fen = this.Chess.fen();
+    }
+
+    private checkType(type: any) {
+        if (typeof type === "string" || typeof type === "number") {
+            switch (type) {
+                case "ai" || 0:
+                    this.type = GameType.AI;
+                    break;
+                case "player" || 1:
+                    this.type = GameType.Player;
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            this.type = type;
+        }
     }
 
 }
