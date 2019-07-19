@@ -30,7 +30,12 @@ export class GameManager {
     }
 
     public async moveChessPiece(userId: string, gameId: string, chessPiece: ChessPiece, boardLocation: any) {
-        await this.games[gameId].movePiece(userId, chessPiece, boardLocation);
+        const locationLower = {
+            from: boardLocation.from.toLowerCase(),
+            to: boardLocation.to.toLowerCase(),
+        };
+        console.log(locationLower);
+        await this.games[gameId].movePiece(userId, chessPiece, locationLower);
         return this.games[gameId];
     }
 
@@ -50,7 +55,6 @@ export class GameManager {
         return new Promise( async (resolve, reject) => {
             const board = new ChessBoard(userId, type, code);
             if (board.type === GameType.AI) {
-                // console.log(board.type);
                 board.checkAiFirstMove(type).then((result) => {
                     resolve(board);
                 }).catch((err) => {
