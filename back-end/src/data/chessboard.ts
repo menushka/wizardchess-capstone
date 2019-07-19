@@ -156,6 +156,7 @@ export class ChessBoard implements IChessBoard {
     }
 
     private checkType(type: any) {
+        type = type.toLowerCase();
         if (typeof type === "string" || typeof type === "number") {
             switch (type) {
                 case "ai" || 0:
