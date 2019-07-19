@@ -16,26 +16,30 @@
 </head>
 
 <body>
-    <div id="main" style="visibility: hidden;">
-        <div>
-            <button onclick="startPVAI()">Start PVAI Game</button><br/>
-            <button onclick="startPVP()">Start PVP Game</button><br/>
-            <button onclick="joinPVP()">Join PVP Game</button>
-            <input id="joinPVPGameID" type="text">
+    <div id="main" class="container p-6 mx-auto h-screen flex justify-center items-center bg-gray-600" style="visibility: hidden;">
+        <div id="menuScreen" class="max-w-sm rounded overflow-hidden shadow-lg px-6 py-4 text-center mx-auto bg-white">
+            <img src="/img/logo.png" class="w-64" />
+            <div class="px-6 py-4">
+              <div class="font-bold text-xl mb-2">Start Game</div>
+              <div class="inline-flex ">
+                <button class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 w-20 mx-2 border border-gray-400 rounded shadow" onclick="startPVAI()">AI</button>
+                <button class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 w-20 mx-2 border border-gray-400 rounded shadow" onclick="startPVP()">Player</button>
+              </div>
+            </div>
+            <div class="px-6 py-4">
+                <div class="font-bold text-xl mb-2">Join Game</div>
+                <div class="inline-flex ">
+                  <input id="joinPVPGameID" class="bg-white border border-gray-300 mb-4 w-20 mx-2 rounded-lg block appearance-none leading-normal text-center" type="text" placeholder="0000">
+                  <button class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 w-20 mx-2 mb-4 border border-gray-400 rounded shadow"  onclick="joinPVP()">Join</button><br/>
+                </div>
+              </div>
         </div>
-        <div>
-            Game Status:<span id="gameStatus"></span><br/>
-            Game ID:<span id="gameGameID"></span><br/>
-            Game Color:<span id="gameGameColor"></span><br/>
-            <button onclick="moveChessPiece()">Move Chess Piece</button>
-            Piece:<input id="gameMovePiece" type="text">
-            From:<input id="gameMoveFrom" type="text">
-            To:<input id="gameMoveTo" type="text">
-            <br/>
-            <button onclick="surrender()">Surrender Game</button>
-            <div id="gameChessboard"></div>
+        <div id="gameScreen" class="hidden bg-white h-full p-4">
+          <div>Game Status:<span id="gameStatus"></span></div>
+          <div>Game ID:<span id="gameGameID"></span></div>
+          <button onclick="surrender()">Surrender Game</button>
+          <div id="board1" style="width:400px;"></div>
         </div>
-      <div id="board1" style="width: 400px"></div>
       <script src="./PvCPU.js"></script>
     </div>
 
