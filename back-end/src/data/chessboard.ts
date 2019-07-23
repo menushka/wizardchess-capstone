@@ -16,6 +16,7 @@ export class ChessBoard implements IChessBoard {
     public currentTurn: number;
     public Chess: any;
     public chessHelper: any;
+    public chessHelperDepth: number;
     public fen: string;
     public move: any;
     public difficulty: number;
@@ -23,10 +24,11 @@ export class ChessBoard implements IChessBoard {
     constructor(userId: string, type: GameType, gameId: string) {
         this.id = gameId;
         this.difficulty = 1;
+        this.chessHelperDepth = 5;
         this.currentTurn = 0;
         this.Chess = new chessjs.Chess();
 
-        this.checkType(type)
+        this.checkType(type);
         this.setDefaultBoardState();
 
         this.state = ChessBoardState.Waiting;
@@ -39,9 +41,6 @@ export class ChessBoard implements IChessBoard {
     }
 
     public movePiece(userId: string, piece: ChessPiece, location: any) {
-        // console.log(this.state);
-        // console.log("White: " + this.whiteUser);
-        // console.log("Black: " + this.blackUser);
         if (this.state !== ChessBoardState.Playing || this.getCurrentUser() !== userId) { return Promise.reject(this.fen); }
         return new Promise(async (resolve, reject) => {
             if (userId !== "AI") {
@@ -52,10 +51,11 @@ export class ChessBoard implements IChessBoard {
                 case GameType.AI: // PvAI
                     this.currentTurn += 1;
                     await this.stockfishMove(this.difficulty, this.fen);
+                    await this.moveHelper(this.chessHelperDepth, this.fen);
                     break;
-                case GameType.Player: // PvP
+                    case GameType.Player: // PvP
                     break;
-            }
+                }
             this.currentTurn += 1;
             resolve(this.fen);
         });
@@ -80,14 +80,17 @@ export class ChessBoard implements IChessBoard {
     }
 
     public moveHelper(depth: number, fen: string) {
-        StockfishManager.instance.postFen(depth, fen); // Moves for player
-        setTimeout(() => {
-            this.chessHelper = {
-                from: StockfishManager.instance.bestmoves.slice(-1)[0].substring(0, 2),
-                to: StockfishManager.instance.bestmoves.slice(-1)[0].substring(2, 4)
-            };
-        }, 50);
-    }
+        return new Promise((resolve, reject) => {
+            StockfishManager.instance.postFen(depth, fen); // Moves for player
+            setTimeout(() => {
+                this.chessHelper = {
+                    from: StockfishManager.instance.bestmoves.slice(-1)[0].substring(0, 2),
+                    to: StockfishManager.instance.bestmoves.slice(-1)[0].substring(2, 4)
+                };
+                resolve(this.chessHelper);
+            }, 50);
+        });
+        }
 
     public surrender(userId: string) {
         this.state = ChessBoardState.Finished;

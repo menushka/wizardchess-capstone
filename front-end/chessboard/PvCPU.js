@@ -54,19 +54,23 @@ function stockfishMove() {
   board.position(game.fen())
 }
 
-// var whiteSquareGrey = '#32CD32'
-// var blackSquareGrey = '#00FF00'
+var whiteSquareGrey = '#32CD32'
+var blackSquareGrey = '#00FF00'
 
-// function greySquare (square) {
-//   var $square = $('#board1 .square-' + square)
+function removeGreySquares () {
+  $('#board1 .square-55d63').css('background', '')
+}
 
-//   var background = whiteSquareGrey
-//   if ($square.hasClass('black-3c85d')) {
-//     background = blackSquareGrey
-//   }
+function greySquare (square) {
+  var $square = $('#board1 .square-' + square)
 
-//   $square.css('background', background)
-// }
+  var background = whiteSquareGrey
+  if ($square.hasClass('black-3c85d')) {
+    background = blackSquareGrey
+  }
+
+  $square.css('background', background)
+}
 
 function onDrop(source, target) {
   // see if the move is legal
@@ -75,11 +79,9 @@ function onDrop(source, target) {
     to: target,
     promotion: 'q' // NOTE: always promote to a queen for example simplicity
   })
-
   // illegal move
 
   console.log(move);
-
   if (move === null) return 'snapback'
 
   // highlight white's move
@@ -221,8 +223,10 @@ socket.on("boardStateUpdate", function (data) {
   game.load(data.board);
   board.position(data.board);
 
-  // greySquare(data.chessHelper.from)
-  // greySquare(data.chessHelper.to)
+  removeGreySquares();
+
+  greySquare(data.chessHelper.from);
+  greySquare(data.chessHelper.to);
 });
 
 console.log(socket.id);
