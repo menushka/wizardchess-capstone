@@ -136,6 +136,7 @@ function toggleScreen(screen) {
 
 function startPVAI() {
   toggleScreen(0);
+  $('#chessHelper').removeClass('hidden')
   send("startGame", {
     type: 0
   });
