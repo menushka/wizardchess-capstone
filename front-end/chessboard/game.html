@@ -16,34 +16,55 @@
 </head>
 
 <body class="w-full">
-    <div id="main" class="p-6 mx-auto h-screen flex justify-center items-center bg-gray-600" style="visibility: hidden;">
-        <div id="menuScreen" class="max-w-sm rounded overflow-hidden shadow-lg px-6 py-4 text-center mx-auto bg-white">
-            <img src="/img/logo.png" class="w-64" />
-            <div class="px-6 py-4">
-              <div class="font-bold text-xl mb-2">Start Game</div>
-              <div class="inline-flex ">
-                <button class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 w-20 mx-2 border border-gray-400 rounded shadow" onclick="startPVAI()">AI</button>
-                <button class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 w-20 mx-2 border border-gray-400 rounded shadow" onclick="startPVP()">Player</button>
-              </div>
-            </div>
-            <div class="px-6 py-4">
-                <div class="font-bold text-xl mb-2">Join Game</div>
-                <div class="inline-flex ">
-                  <input id="joinPVPGameID" class="bg-white border border-gray-300 mb-4 w-20 mx-2 rounded-lg block appearance-none leading-normal text-center" type="text" placeholder="0000">
-                  <button class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 w-20 mx-2 mb-4 border border-gray-400 rounded shadow"  onclick="joinPVP()">Join</button><br/>
-                </div>
-              </div>
+  <div id="main" class="p-6 mx-auto h-screen flex justify-center items-center bg-gray-600" style="visibility: hidden;">
+    <div id="menuScreen" class="max-w-sm rounded overflow-hidden shadow-lg px-6 py-4 text-center mx-auto bg-white">
+      <img src="/img/logo.png" class="w-64" />
+      <div class="px-6 py-4">
+        <div class="font-bold text-xl mb-2">Start Game</div>
+        <div class="inline-flex ">
+          <button
+            class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 w-20 mx-2 border border-gray-400 rounded shadow"
+            onclick="startPVAI()">AI</button>
+          <button
+            class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 w-20 mx-2 border border-gray-400 rounded shadow"
+            onclick="startPVP()">Player</button>
         </div>
-        <div id="gameScreen" class="hidden bg-white p-4 rounded shadow">
-          <div class="fixed top-0 left-0 bg-white p-2 rounded-br font-semibold">Game Status: <span id="gameStatus" class="font-normal"></span></div>
-          <div class="fixed top-0 right-0 bg-white p-2 rounded-bl font-semibold">Game ID: <span id="gameGameID" class="font-normal"></span></div>
-          <div class="fixed bottom-0 right-0 bg-white p-2 rounded-tl font-semibold">Share your game: <a id="gameGameURL" class="font-normal" href=""></a></div>
-          <div id="board1" style="width:400px;"></div>
+      </div>
+      <div class="px-6 py-4">
+        <div class="font-bold text-xl mb-2">Join Game</div>
+        <div class="inline-flex ">
+          <input id="joinPVPGameID"
+            class="bg-white border border-gray-300 mb-4 w-20 mx-2 rounded-lg block appearance-none leading-normal text-center"
+            type="text" placeholder="0000">
+          <button
+            class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 w-20 mx-2 mb-4 border border-gray-400 rounded shadow"
+            onclick="joinPVP()">Join</button><br />
         </div>
-      <script src="./PvCPU.js"></script>
+      </div>
+    </div>
+    
+    <div id="gameScreen" class="hidden bg-white p-5 rounded shadow">
+      <div class="fixed top-0 left-0 bg-white p-2 rounded-br font-semibold">Game Status: <span id="gameStatus"
+          class="font-normal"></span></div>
+      <div class="fixed top-0 right-0 bg-white p-2 rounded-bl font-semibold">Game ID: <span id="gameGameID"
+          class="font-normal"></span></div>
+      <div class="fixed bottom-0 right-0 bg-white p-2 rounded-tl font-semibold">Share your game: <a id="gameGameURL"
+          class="font-normal" href=""></a></div>
+      <div id="board1" style="width:400px;"></div><br />
+
+      <div id="chessHelper" class="max-w-sm rounded overflow-hidden shadow-lg px-6 py-4 text-center mx-auto bg-white">
+        <button id="aiToggle"
+          class="inline-block bg-white text-gray-800 font-semibold p-4 py-2 w-20 mx-2 mb-4 border border-gray-400 rounded shadow "
+          onclick="toggle()">Helper Mode</button>
+          
+        <div id="helperText" class="font-bold text-sm mb-2"></div>
+      </div>
     </div>
 
-    
+    <script src="./PvCPU.js"></script>
+  </div>
+
+
 </body>
 
 </html>

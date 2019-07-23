@@ -5,6 +5,9 @@ var $board = $('#myBoard')
 var game = new Chess()
 var squareToHighlight = null
 var squareClass = 'square-55d63'
+var aiToggle = 0
+var aiFrom = null
+var aiTo = null
 
 var pieces = {
   'p': "P",
@@ -182,6 +185,37 @@ function getBoardConfig(color) {
   }
 }
 
+function toggle() {
+  if (aiToggle === 1) {
+    document.getElementById("aiToggle").innerHTML = "Helper (OFF)";
+    document.getElementById("helperText").innerHTML = "&nbsp";
+    $('#aiToggle').removeClass('bg-blue-500')
+    $('#aiToggle').addClass('bg-white')
+    toggleOff();
+  } else {
+    document.getElementById("aiToggle").innerHTML = "Helper  (ON)";
+    $('#aiToggle').removeClass('bg-white')
+    $('#aiToggle').addClass('bg-blue-500')
+    if (aiTo === null){
+      document.getElementById("helperText").innerHTML = "Unable to recommend a move. Try moving a piece";
+    } else {
+      document.getElementById("helperText").innerHTML = "Recommended Move: " + aiFrom + aiTo;
+    }
+    toggleOn();
+  }
+}
+
+function toggleOn() {
+  greySquare(aiFrom);
+  greySquare(aiTo);
+  aiToggle = 1
+}
+
+function toggleOff() {
+  removeGreySquares()
+  aiToggle = 0;
+}
+
 // board = Chessboard('board1', getBoardConfig('W'));
 
 socket.on("connectionConfirm", function (data) {
@@ -227,10 +261,15 @@ socket.on("boardStateUpdate", function (data) {
   game.load(data.board);
   board.position(data.board);
 
-  removeGreySquares();
+  aiFrom = data.chessHelper.from;
+  aiTo = data.chessHelper.to;
 
-  greySquare(data.chessHelper.from);
-  greySquare(data.chessHelper.to);
+  if (aiToggle === 1) {
+    removeGreySquares();
+    greySquare(aiFrom);
+    greySquare(aiTo);
+    document.getElementById("helperText").innerHTML = "Recommended Move: " + aiFrom + aiTo;
+  }
 });
 
 console.log(socket.id);
