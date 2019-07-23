@@ -26,7 +26,7 @@ export class ChessBoard implements IChessBoard {
         this.currentTurn = 0;
         this.Chess = new chessjs.Chess();
 
-        this.checkType(type);
+        this.checkType(type)
         this.setDefaultBoardState();
 
         this.state = ChessBoardState.Waiting;
@@ -156,24 +156,22 @@ export class ChessBoard implements IChessBoard {
     }
 
     private checkType(type: any) {
-        return new Promise((resolve, reject) => {
-            if (typeof type === "string") {
-                type = type.toLowerCase();
-                switch (type) {
-                    case "ai":
-                        resolve(GameType.AI);
-                        break;
-                    case "player":
-                        resolve(GameType.Player);
-                        break;
-                    default:
-                        reject("Invalid Game Type (Choose AI or Player).");
-                        break;
-                }
-            } else {
-                resolve(type);
+        if (typeof type === "string") {
+            type = type.toLowerCase();
+            switch (type) {
+                case "ai":
+                    this.type = GameType.AI;
+                    break;
+                case "player":
+                    this.type = GameType.Player;
+                    break;
+                default:
+                    console.log("Invalid Game Type (Choose AI or Player).");
+                    break;
             }
-        });
+        } else {
+            this.type = type;
+        }
     }
 
 }
