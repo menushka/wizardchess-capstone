@@ -156,6 +156,10 @@ function joinPVP() {
   });
 }
 
+function viewGame() {
+  window.location.href = 'http://' + location.host + '/game/' + document.getElementById("viewGameID").value;
+}
+
 function moveChessPiece() {
   send("chessPieceMove", {
     piece: document.getElementById("gameMovePiece").value,

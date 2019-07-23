@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Chess</title>
+  <title>WizardChess</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
   <link rel="stylesheet" href="./css/chessboard-1.0.0.css">
   <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
@@ -34,11 +34,22 @@
         <div class="font-bold text-xl mb-2">Join Game</div>
         <div class="inline-flex ">
           <input id="joinPVPGameID"
+            class="bg-white border border-gray-300 w-20 mx-2 rounded-lg block appearance-none leading-normal text-center"
+            type="text" placeholder="0000">
+          <button
+            class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 w-20 mx-2 border border-gray-400 rounded shadow"
+            onclick="joinPVP()">Join</button><br />
+        </div>
+      </div>
+      <div class="px-6 py-4">
+        <div class="font-bold text-xl mb-2">View Game</div>
+        <div class="inline-flex ">
+          <input id="viewGameID"
             class="bg-white border border-gray-300 mb-4 w-20 mx-2 rounded-lg block appearance-none leading-normal text-center"
             type="text" placeholder="0000">
           <button
             class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 w-20 mx-2 mb-4 border border-gray-400 rounded shadow"
-            onclick="joinPVP()">Join</button><br />
+            onclick="viewGame()">View</button><br />
         </div>
       </div>
     </div>
