@@ -43,18 +43,18 @@ export class ChessBoard implements IChessBoard {
         // console.log("White: " + this.whiteUser);
         // console.log("Black: " + this.blackUser);
         if (this.state !== ChessBoardState.Playing || this.getCurrentUser() !== userId) { return Promise.reject(this.fen); }
-        return new Promise( async (resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             if (userId !== "AI") {
-                this.move = this.Chess.move(location.from + location.to, {sloppy: true});
+                this.move = this.Chess.move(location.from + location.to, { sloppy: true });
                 this.fen = this.Chess.fen();
             }
             switch (this.type) {
                 case GameType.AI: // PvAI
-                this.currentTurn += 1;
-                await this.stockfishMove(this.difficulty, this.fen);
-                break;
+                    this.currentTurn += 1;
+                    await this.stockfishMove(this.difficulty, this.fen);
+                    break;
                 case GameType.Player: // PvP
-                break;
+                    break;
             }
             this.currentTurn += 1;
             resolve(this.fen);
@@ -156,21 +156,24 @@ export class ChessBoard implements IChessBoard {
     }
 
     private checkType(type: any) {
-        type = type.toLowerCase();
-        if (typeof type === "string" || typeof type === "number") {
-            switch (type) {
-                case "ai" || 0:
-                    this.type = GameType.AI;
-                    break;
-                case "player" || 1:
-                    this.type = GameType.Player;
-                    break;
-                default:
-                    break;
+        return new Promise((resolve, reject) => {
+            if (typeof type === "string") {
+                type = type.toLowerCase();
+                switch (type) {
+                    case "ai":
+                        resolve(GameType.AI);
+                        break;
+                    case "player":
+                        resolve(GameType.Player);
+                        break;
+                    default:
+                        reject("Invalid Game Type (Choose AI or Player).");
+                        break;
+                }
+            } else {
+                resolve(type);
             }
-        } else {
-            this.type = type;
-        }
+        });
     }
 
 }
