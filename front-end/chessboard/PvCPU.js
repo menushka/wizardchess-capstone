@@ -192,6 +192,8 @@ socket.on("connectionConfirm", function (data) {
 socket.on("startGameConfirm", function (data) {
   console.log("startGameConfirm", data);
   document.getElementById("gameGameID").innerHTML = data.gameId;
+  document.getElementById("gameGameURL").innerHTML = 'http://' + location.host + '/game/' + data.gameId;
+  document.getElementById("gameGameURL").setAttribute('href', 'http://' + location.host + '/game/' + data.gameId);
   document.getElementById("gameStatus").innerHTML = data.status;
   currentState = data.status;
   currentColor = data.color
@@ -205,6 +207,8 @@ socket.on("startGameConfirm", function (data) {
 socket.on("joinGameConfirm", function (data) {
   console.log("joinGameConfirm", data);
   document.getElementById("gameGameID").innerHTML = data.gameId;
+  document.getElementById("gameGameURL").innerHTML = 'http://' + location.host + '/game/' + data.gameId;
+  document.getElementById("gameGameURL").setAttribute('href', 'http://' + location.host + '/game/' + data.gameId);
   document.getElementById("gameStatus").innerHTML = data.status;
   currentState = data.status;
   currentColor = data.color;
