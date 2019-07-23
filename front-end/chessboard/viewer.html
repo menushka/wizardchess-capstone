@@ -13,8 +13,8 @@
     </script>
 </head>
 <body class="w-full">
-    <div id="main" class="p-6 mx-auto h-screen flex justify-center items-center bg-gray-600" style="visibility: hidden;">
-        <div id="gameScreen" class="hidden bg-white p-4 rounded shadow">
+    <div id="main" class="p-6 mx-auto h-screen flex justify-center items-center bg-gray-600">
+        <div id="gameScreen" class="bg-white p-4 rounded shadow">
             <div id="board1" style="width: 400px"></div>
             <script>
                 const socket = io('http://' + location.host, { query: {

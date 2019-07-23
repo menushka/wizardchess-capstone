@@ -34,7 +34,7 @@ export class GameManager {
             from: boardLocation.from.toLowerCase(),
             to: boardLocation.to.toLowerCase(),
         };
-        console.log(locationLower);
+        // console.log(locationLower);
         await this.games[gameId].movePiece(userId, chessPiece, locationLower);
         return this.games[gameId];
     }

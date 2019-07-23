@@ -24,7 +24,7 @@ export class ChessBoard implements IChessBoard {
     constructor(userId: string, type: GameType, gameId: string) {
         this.id = gameId;
         this.difficulty = 1;
-        this.chessHelperDepth = 5;
+        this.chessHelperDepth = 8;
         this.currentTurn = 0;
         this.Chess = new chessjs.Chess();
 
