@@ -46,7 +46,7 @@ export class SocketManager {
             } else {
                 message.userId = userId;
                 if (this.alexaSocket) {
-                    this.alexaSocket.emit(eventName, message);
+                    this.alexaSocket.emit(userId + "|" + eventName, message);
                 }
             }
         }

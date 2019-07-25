@@ -24,15 +24,19 @@ class SocketManager {
     return new Promise((resolve, reject) => {
       data.userId = userId;
       const onConfirm = (response) => {
-        this.socket.off(eventName + "Confirm", onConfirm);
+        clearTimeout(timeout);
+        this.socket.off(userId + "|" + eventName + "Confirm", onConfirm);
         if ('error' in response) {
           reject(response);
         }
         resolve(response);
       };
-      this.socket.on(eventName + "Confirm", onConfirm);
+      this.socket.on(userId + "|" + eventName + "Confirm", onConfirm);
       this.socket.emit(eventName, data);
-      setTimeout(reject, RESPONSE_TIMEOUT);
+      const timeout = setTimeout(() => {
+        this.socket.off(userId + "|" + eventName + "Confirm", onConfirm);
+        reject();
+      }, RESPONSE_TIMEOUT);
     });
   }
 }
@@ -44,7 +48,7 @@ const LaunchRequestHandler = {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
   async handle(handlerInput) {
-    const userId = handlerInput.requestEnvelope.session.user.userId;
+    const userId = handlerInput.requestEnvelope.session.sessionId;
 
     let speechText = '';
     await socketManager.emit(userId, ALEXA_CONNECTION, {})
@@ -70,7 +74,7 @@ const StartGameIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'StartGameIntent';
   },
   async handle(handlerInput) {
-    const userId = handlerInput.requestEnvelope.session.user.userId;
+    const userId = handlerInput.requestEnvelope.session.sessionId;
     const slots = handlerInput.requestEnvelope.request.intent.slots;
     const type = slots["TYPE"].value;
 
@@ -100,7 +104,7 @@ const JoinGameIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'JoinGameIntent';
   },
   async handle(handlerInput) {
-    const userId = handlerInput.requestEnvelope.session.user.userId;
+    const userId = handlerInput.requestEnvelope.session.sessionId;
     const slots = handlerInput.requestEnvelope.request.intent.slots;
     const gameId = slots["GAME_ID"].value;
 
@@ -131,7 +135,7 @@ const MovePieceIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'MovePieceIntent';
   },
   async handle(handlerInput) {
-    const userId = handlerInput.requestEnvelope.session.user.userId;
+    const userId = handlerInput.requestEnvelope.session.sessionId;
     const slots = handlerInput.requestEnvelope.request.intent.slots;
     const boardPositionFrom = slots["BOARD_POSITION_FROM"].value;
     const boardPositionTo = slots["BOARD_POSITION_TO"].value;
@@ -166,7 +170,7 @@ const SurrenderIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'SurrenderIntent';
   },
   async handle(handlerInput) {
-    const userId = handlerInput.requestEnvelope.session.user.userId;
+    const userId = handlerInput.requestEnvelope.session.sessionId;
 
     let speechText = '';
     await socketManager.emit(userId, SURRENDER_GAME, {})

@@ -46,10 +46,9 @@ export class ChessBoard implements IChessBoard {
             if (userId !== "AI") {
                 this.move = this.Chess.move(location.from + location.to, { sloppy: true });
                 if (this.move === null) {
-                    reject(this.fen);
-                } else {
-                    this.fen = this.Chess.fen();
+                    return resolve(this.fen);
                 }
+                this.fen = this.Chess.fen();
             }
             switch (this.type) {
                 case GameType.AI: // PvAI
