@@ -7,7 +7,8 @@
     "start": "node dist/main.js",
     "start:pm2": "tsc -p .; node dist/main.js",
     "watch": "tsc -p . --watch",
-    "tslint": "tslint src/**/*.ts{,x}; exit 0;"
+    "tslint": "tslint src/**/*.ts{,x}; exit 0;",
+    "tunnel": "autossh -M 0 -R wizardchess:80:localhost:8000 serveo.net"
   },
   "author": "“Menushka <“contact@menushka.ca”>",
   "license": "ISC",
