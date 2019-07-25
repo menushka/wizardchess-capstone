@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "tunnel": "autossh -M 0 -R wizardchess:80:localhost:8080 serveo.net",
-    "tunnel-win": "ssh -R wizardchess:80:localhost:8080 serveo.net"
+    "tunnel": "autossh -M 0 -R wizardchessalexa:80:localhost:8080 serveo.net",
+    "tunnel-win": "ssh -R wizardchessalexa:80:localhost:8080 serveo.net"
   },
   "author": "“Menushka <“contact@menushka.ca”>",
   "license": "ISC",
