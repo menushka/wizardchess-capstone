@@ -1,0 +1,30 @@
+{
+  "name": "back-end",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/main.js",
+    "start:pm2": "tsc -p .; node dist/main.js",
+    "watch": "tsc -p . --watch",
+    "tslint": "tslint src/**/*.ts{,x}; exit 0;"
+  },
+  "author": "“Menushka <“contact@menushka.ca”>",
+  "license": "ISC",
+  "dependencies": {
+    "@types/chess.js": "^0.10.0",
+    "@types/socket.io": "^2.1.2",
+    "chess.js": "^0.10.2",
+    "express": "^4.16.4",
+    "js-yaml": ">=3.13.1",
+    "socket.io": "^2.2.0",
+    "socketio-wildcard": "^2.0.0",
+    "stockfish": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.16.1",
+    "@types/node": "^11.11.6",
+    "tslint": "^5.14.0",
+    "typescript": "^3.3.4000"
+  }
+}

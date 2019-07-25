@@ -1,0 +1,20 @@
+{
+  "name": "testskill",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "tunnel": "autossh -M 0 -R wizardchess:80:localhost:8080 serveo.net",
+    "tunnel-win": "ssh -R wizardchess:80:localhost:8080 serveo.net"
+  },
+  "author": "“Menushka <“contact@menushka.ca”>",
+  "license": "ISC",
+  "dependencies": {
+    "ask-sdk": "^2.3.0",
+    "ask-sdk-core": "^2.3.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "socket.io-client": "^2.2.0"
+  }
+}
