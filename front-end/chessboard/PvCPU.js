@@ -157,7 +157,7 @@ function joinPVP() {
 }
 
 function viewGame() {
-  window.location.href = 'https://' + location.host + '/game/' + document.getElementById("viewGameID").value;
+  window.open('https://' + location.host + '/game/' + document.getElementById("viewGameID").value, "_blank");
 }
 
 function moveChessPiece() {
