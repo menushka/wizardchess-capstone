@@ -18,7 +18,7 @@ var pieces = {
   'k': "K",
 }
 
-const socket = io('http://' + location.host, {
+const socket = io('https://' + location.host, {
   query: {
     client: "frontend"
   }
@@ -157,7 +157,7 @@ function joinPVP() {
 }
 
 function viewGame() {
-  window.location.href = 'http://' + location.host + '/game/' + document.getElementById("viewGameID").value;
+  window.location.href = 'https://' + location.host + '/game/' + document.getElementById("viewGameID").value;
 }
 
 function moveChessPiece() {
