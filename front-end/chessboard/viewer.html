@@ -17,7 +17,7 @@
         <div id="gameScreen" class="bg-white p-4 rounded shadow">
             <div id="board1" style="width: 400px"></div>
             <script>
-                const socket = io('http://' + location.host, { query: {
+                const socket = io('https://' + location.host, { query: {
                     client:"viewer",
                     gameId: location.href.substring(location.href.lastIndexOf('/') + 1)
                 } });
