@@ -78,7 +78,7 @@ export class ChessBoard implements IChessBoard {
                     this.fen = this.Chess.fen();
                     resolve(this.fen);
                 }
-            }, 50);
+            }, 200);
         });
     }
 
