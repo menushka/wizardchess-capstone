@@ -16,7 +16,7 @@
     "@types/chess.js": "^0.10.0",
     "@types/socket.io": "^2.1.2",
     "chess.js": "^0.10.2",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "js-yaml": ">=3.13.1",
     "socket.io": "^2.2.0",
     "socketio-wildcard": "^2.0.0",
